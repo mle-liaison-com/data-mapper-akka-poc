@@ -1,0 +1,63 @@
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+
+apply plugin: 'java'
+
+buildscript {
+    apply from: file('gradle/buildscript.gradle'), to: buildscript
+}
+
+apply plugin: 'com.kageiit.url-cache'
+
+apply from: urlCache.get('https://at4d-vpgitlab.liaison.dev/g2/gradle-configuration/raw/release/3.x.x/jacoco.gradle')
+apply from: urlCache.get('https://at4d-vpgitlab.liaison.dev/g2/gradle-configuration/raw/release/3.x.x/sonarqube.gradle')
+
+allprojects {
+    file("${rootDir}/RELEASE_NOTES.md").withReader { version = it.readLine() }
+    group = 'com.liaison.service'
+
+    apply from: urlCache.get('https://at4d-vpgitlab.liaison.dev/g2/gradle-configuration/raw/release/3.x.x/jacoco.gradle')
+    apply from: urlCache.get('https://at4d-vpgitlab.liaison.dev/g2/gradle-configuration/raw/release/3.x.x/publish-library.gradle')
+}
+
+repositories {
+    maven { url 'http://nexus.liaison.dev/content/repositories/g2-releases' }
+    maven { url 'http://nexus.liaison.dev/content/repositories/g2-third-party' }
+    maven { url 'http://nexus.liaison.dev/content/repositories/central' }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
+
+    tasks.withType(JavaCompile) {
+        options*.encoding = 'UTF-8'
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
+
+    buildscript {
+        repositories {
+            maven { url 'http://nexus.liaison.dev/content/repositories/central' }
+        }
+    }
+
+    repositories {
+        maven { url 'http://nexus.liaison.dev/content/repositories/g2-releases' }
+        maven { url 'http://nexus.liaison.dev/content/repositories/g2-third-party' }
+        maven { url 'http://nexus.liaison.dev/content/repositories/central' }
+    }
+
+    dependencies {
+        compile 'com.typesafe.akka:akka-actor_2.11:2.5.4'
+        compile 'com.typesafe.akka:akka-stream_2.11:2.5.4'
+        compile 'com.typesafe.akka:akka-slf4j_2.11:2.5.4'
+        compile 'ch.qos.logback:logback-classic:1.2.3'
+
+        compile ('com.liaison.dto:dto:4.+') {
+            exclude group: 'org.codehaus.jackson'
+        }
+
+        testCompile group: 'junit', name: 'junit', version: '4.11'
+    }
+}

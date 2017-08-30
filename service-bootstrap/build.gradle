@@ -1,0 +1,16 @@
+apply plugin: 'application'
+
+mainClassName = "com.liaison.service.akka.bootstrap.ServiceBootstrap"
+
+distributions {
+    main {
+        baseName = rootProject.name
+        version = ''
+    }
+}
+
+dependencies {
+    compile project(path: ':service-implementation')
+    compile 'com.typesafe.akka:akka-http-jackson_2.11:10.0.9'
+    compile "com.typesafe.akka:akka-stream-kafka_2.11:0.16"
+}

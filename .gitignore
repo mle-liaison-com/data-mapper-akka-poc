@@ -1,0 +1,123 @@
+# ======================================================================
+# Project Level Git Ignore Rules
+# ======================================================================
+# This file contains "top level" git exclusion patterns applied to the
+# whole project.
+#
+# Some basic .gitignore pattern/naming rules:
+#
+#     * Blank lines and lines beginning with '#' are ignored
+#     * Standard shell glob patterns work
+#         - See http://www.tldp.org/LDP/GNU-Linux-Tools-Summary/html/x11655.htm
+#     * Patterns that begin with a slash ('/') are evaluated from the root.
+#     * Patterns that DO NOT begin with slash apply to ALL files or folder matching the pattern.
+#     * Patterns then end with a slash specify a directory, but NOT the files/ folders within.
+#     * Patterns that end with a slash and asterisk ('/*') specify the contents of a folder.
+#     * Negate a pattern by beginning it with an '!'
+#     * Example
+#           # ignore java class files
+#           *.class
+#           # ignore binary/compiled files
+#           *.[oa]
+#           # ignore temporary files
+#           *~
+#           # exclude the folder '/a/b/c' but not the folder 'foo'
+#           /a/b/c/
+#           !foo
+#           # exclude all the files in '/a/b/c' but not the file 'foo'
+#           /a/b/c/*
+#           !foo
+#     * For more detail see http://git-scm.com/docs/gitignore
+# ======================================================================
+
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.tgz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs and databases #
+######################
+*.log
+*.ser
+*.err
+*.out
+
+# OS generated files #
+######################
+.DS_Store*
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# Editor Files #
+################
+*~
+*.swp
+*/~provisionDB.sql
+
+# Gradle Files #
+################
+.gradle/
+gradle-app.setting
+.m2
+gdl*
+/init.gradle
+
+# Build output directories
+/target
+*/target
+/build
+*/build
+install/
+tools/
+service-bootstrap/out/
+service-core/out/
+service-implementation/out/
+
+# IntelliJ specific files/directories
+out
+.idea
+*.ipr
+*.iws
+*.iml
+atlassian-ide-plugin.xml
+
+# Eclipse specific files/directories
+.classpath
+.project
+.settings
+.metadata
+/bin
+*/bin
+
+# NetBeans specific files/directories
+.nbattrs
+
+# AngularJS excludes
+/.nb-gradle/profiles/private/
+/service-framework/.nb-gradle/profiles/private/
+/service-implementation/.nb-gradle/profiles/private/
+
+/service-implementation/src/main/webapp/ui/js/vendor/angular-1.2.0-rc.3/docs/
+classes
+
+# downloaded error pages for WAR
+**/src/main/webapp/**/error-*.html
