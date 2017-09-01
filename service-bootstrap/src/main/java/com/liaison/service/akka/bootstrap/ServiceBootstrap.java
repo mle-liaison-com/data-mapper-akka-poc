@@ -39,12 +39,11 @@ public final class ServiceBootstrap extends HttpApp {
         System.setProperty(ConfigBootstrap.CONFIG_AKKA_DEPLOYMENT_STACK, "stack");
         System.setProperty(ConfigBootstrap.CONFIG_AKKA_DEPLOYMENT_ENVIRONMENT, "dev");
         System.setProperty(ConfigBootstrap.CONFIG_AKKA_DEPLOYMENT_REGION, "region");
-        System.setProperty(ConfigBootstrap.CONFIG_AKKA_DEPLOYMENT_DATACENTER, "region");
-
+        System.setProperty(ConfigBootstrap.CONFIG_AKKA_DEPLOYMENT_DATACENTER, "datacenter");
         Config complete = ConfigBootstrap.getConfig();
 
         // boot up server using the route as defined below
-        ActorSystem system = ActorSystem.create("nucleus", complete);
+        ActorSystem system = ActorSystem.create("akka-service", complete);
         ActorMaterializer materializer = ActorMaterializer.create(system);
 
         //In order to access all directives we need an instance where the routes are defined.

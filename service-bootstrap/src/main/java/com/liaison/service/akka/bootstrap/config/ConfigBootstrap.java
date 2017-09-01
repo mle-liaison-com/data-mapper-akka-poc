@@ -20,7 +20,7 @@ public final class ConfigBootstrap {
     public static final String CONFIG_AKKA_DEPLOYMENT_REGION = "akka.deployment.region";
     public static final String CONFIG_AKKA_DEPLOYMENT_DATACENTER = "akka.deployment.datacenter";
 
-    private static final String CONFIG_APPLICATION = "application";
+    private static final String CONFIG_LOGGING = "logging.conf";
     private static final Config COMPLETE;
     static {
         final String applicationId = System.getProperty(CONFIG_AKKA_DEPLOYMENT_APPLICATIONID);
@@ -45,13 +45,13 @@ public final class ConfigBootstrap {
                     ));
         }
 
-        // TODO logback configuration does not read off from custom configuration file. check if this is a bug in akka
-        Config combined = getStrictConfig(getConfigName(CONFIG_APPLICATION));
-        combined = combine(getConfigName(applicationId), combined);
+        Config combined = getStrictConfig(getConfigName(applicationId));
         combined = combine(getConfigName(applicationId, stack), combined);
         combined = combine(getConfigName(applicationId, environment), combined);
         combined = combine(getConfigName(applicationId, environment, region), combined);
         combined = combine(getConfigName(applicationId, environment, datacenter), combined);
+        // TODO logger configs can only be read from top of config stack. check if this is a bug
+        combined = combine(CONFIG_LOGGING, combined);
         COMPLETE = ConfigFactory.load(combined);
     }
 

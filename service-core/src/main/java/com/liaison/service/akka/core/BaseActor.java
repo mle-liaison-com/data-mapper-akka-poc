@@ -12,12 +12,18 @@ public abstract class BaseActor extends AbstractActor {
 
     // TODO try using -Dlogback.configurationFile to specify log config file instead of default logback.xml
     private final DiagnosticLoggingAdapter logger;
+    private final String gpuid;
 
     protected BaseActor(String gpuid) {
+        this.gpuid = gpuid;
         logger = Logging.withMarker(this);
         Map<String, Object> mdc = new HashMap<>();
         mdc.put("gpuid", gpuid);
         logger.setMDC(mdc);
+    }
+
+    protected final String getGpuid() {
+        return gpuid;
     }
 
     protected Config getConfig() {
