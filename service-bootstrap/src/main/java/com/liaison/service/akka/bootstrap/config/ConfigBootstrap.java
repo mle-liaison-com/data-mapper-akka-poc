@@ -3,7 +3,6 @@ package com.liaison.service.akka.bootstrap.config;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
-import com.typesafe.config.ConfigResolveOptions;
 
 import java.util.Arrays;
 
@@ -20,7 +19,6 @@ public final class ConfigBootstrap {
     public static final String CONFIG_AKKA_DEPLOYMENT_REGION = "akka.deployment.region";
     public static final String CONFIG_AKKA_DEPLOYMENT_DATACENTER = "akka.deployment.datacenter";
 
-    private static final String CONFIG_LOGGING = "logging.conf";
     private static final Config COMPLETE;
     static {
         final String applicationId = System.getProperty(CONFIG_AKKA_DEPLOYMENT_APPLICATIONID);
@@ -45,14 +43,12 @@ public final class ConfigBootstrap {
                     ));
         }
 
-        Config combined = getStrictConfig(getConfigName(applicationId));
+        Config combined = ConfigFactory.load();
+        combined = combine(getConfigName(applicationId), combined);
         combined = combine(getConfigName(applicationId, stack), combined);
         combined = combine(getConfigName(applicationId, environment), combined);
         combined = combine(getConfigName(applicationId, environment, region), combined);
-        combined = combine(getConfigName(applicationId, environment, datacenter), combined);
-        // TODO logger configs can only be read from top of config stack. check if this is a bug
-        combined = combine(CONFIG_LOGGING, combined);
-        COMPLETE = ConfigFactory.load(combined);
+        COMPLETE = combine(getConfigName(applicationId, environment, datacenter), combined);
     }
 
     private static String getConfigName(String applicationId, String... names) {
@@ -65,10 +61,22 @@ public final class ConfigBootstrap {
         return ConfigFactory.load(combined);
     }
 
+    /**
+     * {@link ConfigFactory#load(String)} involves 3 steps
+     *      1. loading {@link ConfigFactory#defaultOverrides()}
+     *      2. loading user provided config via {@link ConfigFactory#parseResourcesAnySyntax(String)}
+     *      3. loading {@link ConfigFactory#defaultReference(ClassLoader)}
+     *  Step 1 loads all the default Akka configurations first,
+     *  causing previously overwritten Akka configurations to be lost.
+     *  To preserve all user provided configurations,
+     *  {@link ConfigFactory#parseResourcesAnySyntax(String)} needs to be used in isolation.
+     *
+     * @param configName name of the config file
+     * @return Config object containing configs specified in file only
+     */
     private static Config getStrictConfig(String configName) {
-        return ConfigFactory.load(configName,
-                ConfigParseOptions.defaults().setAllowMissing(false),
-                ConfigResolveOptions.defaults());
+        return ConfigFactory.parseResourcesAnySyntax(configName,
+                ConfigParseOptions.defaults().setAllowMissing(false));
     }
 
     public static Config getConfig() {

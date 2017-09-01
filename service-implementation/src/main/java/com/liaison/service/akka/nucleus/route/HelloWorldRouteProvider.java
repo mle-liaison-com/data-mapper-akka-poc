@@ -5,7 +5,6 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.http.javadsl.model.HttpResponse;
 import akka.http.javadsl.model.StatusCodes;
-import akka.http.javadsl.server.AllDirectives;
 import akka.http.javadsl.server.ExceptionHandler;
 import akka.http.javadsl.server.Route;
 import akka.pattern.PatternsCS;
@@ -19,31 +18,37 @@ import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
+import static akka.http.javadsl.server.Directives.complete;
+import static akka.http.javadsl.server.Directives.completeWithFuture;
+import static akka.http.javadsl.server.Directives.handleExceptions;
+import static akka.http.javadsl.server.Directives.path;
+import static akka.http.javadsl.server.Directives.route;
+
 public class HelloWorldRouteProvider implements RouteProvider {
 
     // TODO actor vs future
     @Override
-    public Route get(final ActorSystem system, final AllDirectives directives) {
-        return directives.route(
-                directives.path("simple", () -> directives.complete("Hello, World!")),
-                directives.path("sync", () -> invokeActorWithExceptionHandler(system, directives, createActorRef(system, HelloWorldSyncActor.class, UUID.randomUUID().toString()))),
-                directives.path("async", () -> {
+    public Route get(final ActorSystem system) {
+        return route(
+                path("simple", () -> complete("Hello, World!")),
+                path("sync", () -> invokeActorWithExceptionHandler(system, createActorRef(system, HelloWorldSyncActor.class, UUID.randomUUID().toString()))),
+                path("async", () -> {
                     ActorRef async = system.actorOf(Props.create(HelloWorldAsyncActor.class, UUID.randomUUID().toString()));
                     async.tell("", async);
-                    return directives.complete(StatusCodes.NO_CONTENT);
+                    return complete(StatusCodes.NO_CONTENT);
                 }),
-                directives.path("fail", () -> invokeActorWithExceptionHandler(system, directives, createActorRef(system, FailActor.class, UUID.randomUUID().toString())))
+                path("fail", () -> invokeActorWithExceptionHandler(system, createActorRef(system, FailActor.class, UUID.randomUUID().toString())))
         );
     }
 
-    private ActorRef createActorRef(ActorSystem system, Class<? extends BaseActor> actorClass, Object... args) {
+    private ActorRef createActorRef(final ActorSystem system, Class<? extends BaseActor> actorClass, Object... args) {
         return system.actorOf(Props.create(actorClass, args));
     }
 
-    private Route invokeActorWithExceptionHandler(ActorSystem system, AllDirectives directives, ActorRef ref) {
+    private Route invokeActorWithExceptionHandler(final ActorSystem system, final ActorRef ref) {
         final ExceptionHandler handler = ExceptionHandler.newBuilder().matchAny(
                 throwable -> stopActorAfterUse(
-                        t -> directives.complete(StatusCodes.INTERNAL_SERVER_ERROR, t.getMessage()),
+                        t -> complete(StatusCodes.INTERNAL_SERVER_ERROR, t.getMessage()),
                         throwable,
                         system,
                         ref)).build();
@@ -53,10 +58,10 @@ public class HelloWorldRouteProvider implements RouteProvider {
                         returned,
                         system,
                         ref));
-        return directives.handleExceptions(handler, () -> directives.completeWithFuture(future));
+        return handleExceptions(handler, () -> completeWithFuture(future));
     }
 
-    private <E, T> T stopActorAfterUse(Function<E, T> function, E o, ActorSystem system, ActorRef ref) {
+    private <E, T> T stopActorAfterUse(Function<E, T> function, E o, final ActorSystem system, final ActorRef ref) {
         try {
             return function.apply(o);
         } finally {

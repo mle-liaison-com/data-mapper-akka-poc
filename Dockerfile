@@ -2,7 +2,6 @@ FROM docker.ci.liaison.com/alloy/jre:1.2.0-0-772edc8123
 
 ENV APPLICATION_ID g2-akka-nucleus
 
-
 EXPOSE 8989
 
 RUN mkdir /app

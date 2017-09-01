@@ -22,7 +22,7 @@ public final class ServiceBootstrap extends HttpApp {
 
     @Override
     protected Route routes() {
-        return routeProvider.get(system, this);
+        return routeProvider.get(system);
     }
 
     @Override
