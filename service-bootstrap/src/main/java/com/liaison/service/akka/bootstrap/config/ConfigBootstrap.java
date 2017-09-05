@@ -67,7 +67,7 @@ public final class ConfigBootstrap {
      *      2. loading user provided config via {@link ConfigFactory#parseResourcesAnySyntax(String)}
      *      3. loading {@link ConfigFactory#defaultReference(ClassLoader)}
      *  Step 1 loads all the default Akka configurations first,
-     *  causing previously overwritten Akka configurations to be lost.
+     *  causing previously overwritten Akka configurations to be lost (custom configurations are fine).
      *  To preserve all user provided configurations,
      *  {@link ConfigFactory#parseResourcesAnySyntax(String)} needs to be used in isolation.
      *
