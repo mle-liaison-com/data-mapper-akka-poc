@@ -3,9 +3,9 @@ package com.liaison.service.akka.nucleus.actor;
 import akka.actor.ActorRef;
 import com.liaison.service.akka.core.BaseActor;
 
-public class HelloWorldSyncActor extends BaseActor {
+public class HelloWorldActor extends BaseActor {
 
-    public HelloWorldSyncActor(String gpuid) {
+    public HelloWorldActor(String gpuid) {
         super(gpuid);
     }
 

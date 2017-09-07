@@ -1,3 +1,5 @@
 dependencies {
     compile project(path: ':service-core')
+
+    testCompile 'com.typesafe.akka:akka-http-testkit_2.11:10.0.10'
 }

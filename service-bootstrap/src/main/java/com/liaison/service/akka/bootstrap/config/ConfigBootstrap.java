@@ -72,7 +72,7 @@ public final class ConfigBootstrap {
      *  {@link ConfigFactory#parseResourcesAnySyntax(String)} needs to be used in isolation.
      *
      * @param configName name of the config file
-     * @return Config object containing configs specified in file only
+     * @return Config object containing configs defined in specified file only
      */
     private static Config getStrictConfig(String configName) {
         return ConfigFactory.parseResourcesAnySyntax(configName,

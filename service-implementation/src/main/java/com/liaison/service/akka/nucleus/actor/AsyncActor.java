@@ -2,9 +2,9 @@ package com.liaison.service.akka.nucleus.actor;
 
 import com.liaison.service.akka.core.BaseActor;
 
-public class HelloWorldAsyncActor extends BaseActor {
+public class AsyncActor extends BaseActor {
 
-    public HelloWorldAsyncActor(String gpuid) {
+    public AsyncActor(String gpuid) {
         super(gpuid);
     }
 

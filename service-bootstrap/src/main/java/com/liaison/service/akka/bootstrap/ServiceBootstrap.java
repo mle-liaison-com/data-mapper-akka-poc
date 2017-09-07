@@ -7,7 +7,8 @@ import akka.http.javadsl.settings.ServerSettings;
 import akka.stream.ActorMaterializer;
 import com.liaison.service.akka.bootstrap.config.ConfigBootstrap;
 import com.liaison.service.akka.core.route.RouteProvider;
-import com.liaison.service.akka.nucleus.route.HelloWorldRouteProvider;
+import com.liaison.service.akka.core.route.swagger.SwaggerRouteProvider;
+import com.liaison.service.akka.nucleus.route.RouteProviderImpl;
 import com.typesafe.config.Config;
 
 public final class ServiceBootstrap extends HttpApp {
@@ -22,7 +23,7 @@ public final class ServiceBootstrap extends HttpApp {
 
     @Override
     protected Route routes() {
-        return routeProvider.get(system);
+        return route(routeProvider.create(system), new SwaggerRouteProvider().create(system));
     }
 
     @Override
@@ -47,7 +48,7 @@ public final class ServiceBootstrap extends HttpApp {
         ActorMaterializer materializer = ActorMaterializer.create(system);
 
         //In order to access all directives we need an instance where the routes are defined.
-        ServiceBootstrap app = new ServiceBootstrap(system, new HelloWorldRouteProvider());
+        ServiceBootstrap app = new ServiceBootstrap(system, new RouteProviderImpl());
         app.startServer(complete.getString(CONFIG_AKKA_HTTP_SERVER_HOST),
                 complete.getInt(CONFIG_AKKA_HTTP_SERVER_PORT),
                 ServerSettings.create(complete));
