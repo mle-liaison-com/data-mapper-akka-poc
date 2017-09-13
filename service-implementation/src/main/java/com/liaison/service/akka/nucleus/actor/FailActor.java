@@ -21,8 +21,9 @@ public class FailActor extends BaseActor {
         return receiveBuilder()
                 .matchAny(any -> {
                     try {
-                        throw new RuntimeException("test exception: " + this);
+                        throw new RuntimeException("test exception");
                     } catch (Exception e) {
+                        getLogger().error("{}: {}", e.getMessage(), this);
                         getSender().tell(new Status.Failure(e), ActorRef.noSender());
                         throw e;
                     }

@@ -23,7 +23,7 @@ public class HelloRouteProviderTest extends JUnitRouteTest {
         TestKit.shutdownActorSystem(system);
     }
 
-    private TestRoute testRoute = testRoute(new HelloRouteProvider().create(system));
+    private TestRoute testRoute = testRoute(new HelloRouteProvider(system).create());
 
     @Test
     public void testHelloSimple() {

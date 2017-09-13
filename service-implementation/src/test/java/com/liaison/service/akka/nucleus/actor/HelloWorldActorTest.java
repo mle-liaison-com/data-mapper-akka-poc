@@ -3,13 +3,11 @@ package com.liaison.service.akka.nucleus.actor;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
+import akka.routing.FromConfig;
 import akka.testkit.javadsl.TestKit;
-import com.typesafe.config.ConfigFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import java.util.UUID;
 
 public class HelloWorldActorTest {
 
@@ -17,7 +15,7 @@ public class HelloWorldActorTest {
 
     @BeforeClass
     public static void setup() {
-        system = ActorSystem.create("HelloWorldActorTest", ConfigFactory.parseString("akka.loggers = [\"akka.testkit.TestEventListener\"]"));
+        system = ActorSystem.create("HelloWorldActorTest");
     }
 
     @AfterClass
@@ -28,7 +26,7 @@ public class HelloWorldActorTest {
     @Test
     public void testSyncActorMessage() {
         new TestKit(system) {{
-            final ActorRef subject = system.actorOf(Props.create(HelloWorldActor.class, UUID.randomUUID().toString()));
+            final ActorRef subject = system.actorOf(FromConfig.getInstance().props(Props.create(HelloWorldActor.class, "test")), "hello");
             within(duration("3 seconds"), () -> {
                 subject.tell("hello", getRef());
                 expectMsg("Hello, World!");

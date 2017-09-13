@@ -23,7 +23,7 @@ public class SampleRouteProviderTest extends JUnitRouteTest {
         TestKit.shutdownActorSystem(system);
     }
 
-    private TestRoute testRoute = testRoute(new SampleRouteProvider().create(system));
+    private TestRoute testRoute = testRoute(new SampleRouteProvider(system).create());
 
     @Test
     public void testSampleAsync() {
