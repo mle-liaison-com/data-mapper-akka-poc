@@ -5,21 +5,21 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.routing.FromConfig;
 import akka.testkit.javadsl.TestKit;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class HelloWorldActorTest {
 
-    private static ActorSystem system;
+    private ActorSystem system;
 
-    @BeforeClass
-    public static void setup() {
+    @Before
+    public void setup() {
         system = ActorSystem.create("HelloWorldActorTest");
     }
 
-    @AfterClass
-    public static void teardown() {
+    @After
+    public void teardown() {
         TestKit.shutdownActorSystem(system);
     }
 

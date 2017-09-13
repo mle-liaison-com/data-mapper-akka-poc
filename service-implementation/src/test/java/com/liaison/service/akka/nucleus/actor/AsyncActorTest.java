@@ -7,8 +7,8 @@ import akka.event.Logging;
 import akka.testkit.javadsl.EventFilter;
 import akka.testkit.javadsl.TestKit;
 import com.typesafe.config.ConfigFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -17,15 +17,15 @@ import static org.junit.Assert.assertTrue;
 
 public class AsyncActorTest {
 
-    private static ActorSystem system;
+    private ActorSystem system;
 
-    @BeforeClass
-    public static void setup() {
+    @Before
+    public void setup() {
         system = ActorSystem.create("AsyncActorTest", ConfigFactory.parseString("akka.loggers = [\"akka.testkit.TestEventListener\"]"));
     }
 
-    @AfterClass
-    public static void teardown() {
+    @After
+    public void teardown() {
         TestKit.shutdownActorSystem(system);
     }
 

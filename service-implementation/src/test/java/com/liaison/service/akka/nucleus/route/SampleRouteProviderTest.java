@@ -5,25 +5,25 @@ import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.testkit.JUnitRouteTest;
 import akka.http.javadsl.testkit.TestRoute;
 import akka.testkit.javadsl.TestKit;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class SampleRouteProviderTest extends JUnitRouteTest {
 
-    private static ActorSystem system;
+    private ActorSystem system;
+    private TestRoute testRoute;
 
-    @BeforeClass
-    public static void setup() {
+    @Before
+    public void setup() {
         system = ActorSystem.create();
+        testRoute = testRoute(new SampleRouteProvider(system).create());
     }
 
-    @AfterClass
-    public static void teardown() {
+    @After
+    public void teardown() {
         TestKit.shutdownActorSystem(system);
     }
-
-    private TestRoute testRoute = testRoute(new SampleRouteProvider(system).create());
 
     @Test
     public void testSampleAsync() {
