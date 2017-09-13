@@ -20,8 +20,14 @@ public class SwaggerRouteProvider implements RouteProvider {
 
     public static final String CONFIG_SWAGGER_CLASSES = "com.liaison.service.akka.swagger.classes";
 
+    private final ActorSystem system;
+
+    public SwaggerRouteProvider(ActorSystem system) {
+        this.system = system;
+    }
+
     @Override
-    public Route create(ActorSystem system) {
+    public Route create() {
         List<String> list = system.settings().config().getStringList(CONFIG_SWAGGER_CLASSES);
         Set<Class<?>> set = list.stream().map(str -> {
             try {

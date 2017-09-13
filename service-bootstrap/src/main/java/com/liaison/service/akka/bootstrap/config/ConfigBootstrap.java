@@ -6,7 +6,6 @@ import com.typesafe.config.ConfigParseOptions;
 
 import java.util.Arrays;
 
-// TODO file-based configuration hierarchy ???
 public final class ConfigBootstrap {
 
     private ConfigBootstrap() {

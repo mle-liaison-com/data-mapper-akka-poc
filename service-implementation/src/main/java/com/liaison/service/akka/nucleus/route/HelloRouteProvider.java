@@ -1,11 +1,13 @@
 package com.liaison.service.akka.nucleus.route;
 
+import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import akka.actor.Props;
 import akka.http.javadsl.model.HttpResponse;
 import akka.http.javadsl.model.StatusCodes;
-import akka.http.javadsl.server.AllDirectives;
 import akka.http.javadsl.server.Route;
-import com.liaison.service.akka.core.route.PerRequestActorRouteProvider;
+import akka.routing.FromConfig;
+import com.liaison.service.akka.core.route.RouteProvider;
 import com.liaison.service.akka.nucleus.actor.HelloWorldActor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -14,15 +16,28 @@ import io.swagger.annotations.ApiResponses;
 
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
-import java.util.UUID;
+
+import static akka.http.javadsl.server.Directives.complete;
+import static akka.http.javadsl.server.Directives.get;
+import static akka.http.javadsl.server.Directives.path;
+import static akka.http.javadsl.server.Directives.pathPrefix;
+import static akka.http.javadsl.server.Directives.route;
 
 @Api(value = "/hello", produces = "text/plain")
 @Path("/hello")
-public class HelloRouteProvider extends AllDirectives implements PerRequestActorRouteProvider {
+public class HelloRouteProvider implements RouteProvider {
+
+    private final ActorSystem system;
+    private final ActorRef helloRef;
+
+    HelloRouteProvider(ActorSystem system) {
+        this.system = system;
+        this.helloRef = system.actorOf(FromConfig.getInstance().props(Props.create(HelloWorldActor.class, "test")), "hello");
+    }
 
     @Override
-    public Route create(final ActorSystem system) {
-        return pathPrefix("hello", () -> route(simpleGet(), syncGet(system)));
+    public Route create() {
+        return pathPrefix("hello", () -> route(simpleGet(), syncGet()));
     }
 
     @Path("/simple")
@@ -35,12 +50,12 @@ public class HelloRouteProvider extends AllDirectives implements PerRequestActor
     @Path("/sync")
     @ApiOperation(value = "sync", nickname = "sync", httpMethod = HttpMethod.GET, response = String.class)
     @ApiResponses(value = { @ApiResponse(code = 500, message = "Internal server error") })
-    public Route syncGet(final ActorSystem system) {
+    public Route syncGet() {
         return path("sync", () -> get(() -> invokeActorWithExceptionHandler(
-                        system,
-                        createActorRef(system, HelloWorldActor.class, UUID.randomUUID().toString()),
-                        "message",
-                        t -> complete(StatusCodes.INTERNAL_SERVER_ERROR, t.getMessage()),
-                        o -> HttpResponse.create().withEntity(o.toString()))));
+                system,
+                helloRef,
+                "message",
+                t -> complete(StatusCodes.INTERNAL_SERVER_ERROR, t.getMessage()),
+                o -> HttpResponse.create().withEntity(o.toString()))));
     }
 }

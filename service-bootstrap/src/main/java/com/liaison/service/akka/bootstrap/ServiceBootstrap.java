@@ -23,12 +23,7 @@ public final class ServiceBootstrap extends HttpApp {
 
     @Override
     protected Route routes() {
-        return route(routeProvider.create(system), new SwaggerRouteProvider().create(system));
-    }
-
-    @Override
-    protected void postHttpBindingFailure(Throwable cause) {
-        systemReference.get().log().info("I can't bind!");
+        return route(routeProvider.create(), new SwaggerRouteProvider(system).create());
     }
 
     public static final String CONFIG_AKKA_HTTP_SERVER_HOST = "akka.http.server.host";
@@ -47,8 +42,8 @@ public final class ServiceBootstrap extends HttpApp {
         ActorSystem system = ActorSystem.create("akka-service", complete);
         ActorMaterializer materializer = ActorMaterializer.create(system);
 
-        //In order to access all directives we need an instance where the routes are defined.
-        ServiceBootstrap app = new ServiceBootstrap(system, new RouteProviderImpl());
+        //In order to acces s all directives we need an instance where the routes are defined.
+        ServiceBootstrap app = new ServiceBootstrap(system, new RouteProviderImpl(system));
         app.startServer(complete.getString(CONFIG_AKKA_HTTP_SERVER_HOST),
                 complete.getInt(CONFIG_AKKA_HTTP_SERVER_PORT),
                 ServerSettings.create(complete));

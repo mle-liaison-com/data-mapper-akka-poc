@@ -11,11 +11,17 @@ public class FailActor extends BaseActor {
     }
 
     @Override
+    public void preStart() throws Exception {
+        super.preStart();
+        getLogger().info("started: {}", this);
+    }
+
+    @Override
     public Receive createReceive() {
         return receiveBuilder()
                 .matchAny(any -> {
                     try {
-                        throw new RuntimeException("test exception");
+                        throw new RuntimeException("test exception: " + this);
                     } catch (Exception e) {
                         getSender().tell(new Status.Failure(e), ActorRef.noSender());
                         throw e;

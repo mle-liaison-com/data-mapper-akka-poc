@@ -11,19 +11,14 @@ import java.util.Map;
 public abstract class BaseActor extends AbstractActor {
 
     // TODO try using -Dlogback.configurationFile to specify log config file instead of default logback.xml
+    // TODO no longer using actor per request pattern. move gpuid elsewhere (perhaps new logging utility methods ?)
     private final DiagnosticLoggingAdapter logger;
-    private final String gpuid;
 
     protected BaseActor(String gpuid) {
-        this.gpuid = gpuid;
         logger = Logging.withMarker(this);
         Map<String, Object> mdc = new HashMap<>();
         mdc.put("gpuid", gpuid);
         logger.setMDC(mdc);
-    }
-
-    protected final String getGpuid() {
-        return gpuid;
     }
 
     protected Config getConfig() {
@@ -32,10 +27,5 @@ public abstract class BaseActor extends AbstractActor {
 
     protected DiagnosticLoggingAdapter getLogger() {
         return logger;
-    }
-
-    @Override
-    public void postStop() {
-        logger.clearMDC();
     }
 }

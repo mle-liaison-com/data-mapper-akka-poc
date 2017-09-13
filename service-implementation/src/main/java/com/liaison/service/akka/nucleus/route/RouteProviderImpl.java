@@ -8,13 +8,17 @@ import static akka.http.javadsl.server.Directives.route;
 
 public class RouteProviderImpl implements RouteProvider {
 
-    // TODO actor vs future
-    // TODO route test
+    private final ActorSystem system;
+
+    public RouteProviderImpl(ActorSystem system) {
+        this.system = system;
+    }
+
     @Override
-    public Route create(final ActorSystem system) {
+    public Route create() {
         return route(
-                new SampleRouteProvider().create(system),
-                new HelloRouteProvider().create(system)
+                new SampleRouteProvider(system).create(),
+                new HelloRouteProvider(system).create()
         );
     }
 }
