@@ -18,8 +18,8 @@ public class HelloWorldActor extends BaseActor {
     public Receive createReceive() {
         return receiveBuilder()
                 .matchAny(any -> {
-                    getLogger().info("receive sync message {}, {}", any, this);
-                    childRef.tell("child", ActorRef.noSender());
+                    //getLogger().info("receive sync message {}, {}", any, this);
+                    //childRef.tell("child", ActorRef.noSender());
                     getSender().tell("Hello, World!", ActorRef.noSender());
                 })
                 .build();
