@@ -1,3 +1,3 @@
 1.0.0-SNAPSHOT
 -----------------------------------
-* akka_script initial
+* akka_nucleus initial

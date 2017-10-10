@@ -48,6 +48,7 @@ public final class ConfigBootstrap {
         combined = combine(getConfigName(applicationId, environment), combined);
         combined = combine(getConfigName(applicationId, environment, region), combined);
         COMPLETE = combine(getConfigName(applicationId, environment, datacenter), combined);
+        // TODO secure.properties
     }
 
     private static String getConfigName(String applicationId, String... names) {

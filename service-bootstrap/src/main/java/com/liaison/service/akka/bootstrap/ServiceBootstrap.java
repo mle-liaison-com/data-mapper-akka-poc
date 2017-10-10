@@ -30,12 +30,6 @@ public final class ServiceBootstrap extends HttpApp {
     public static final String CONFIG_AKKA_HTTP_SERVER_PORT = "akka.http.server.port";
 
     public static void main(String[] args) throws Exception {
-        // TODO for local test only. delete once system properties are correctly passed in
-        System.setProperty(ConfigBootstrap.CONFIG_AKKA_DEPLOYMENT_APPLICATIONID, "akka-nucleus");
-        System.setProperty(ConfigBootstrap.CONFIG_AKKA_DEPLOYMENT_STACK, "stack");
-        System.setProperty(ConfigBootstrap.CONFIG_AKKA_DEPLOYMENT_ENVIRONMENT, "dev");
-        System.setProperty(ConfigBootstrap.CONFIG_AKKA_DEPLOYMENT_REGION, "region");
-        System.setProperty(ConfigBootstrap.CONFIG_AKKA_DEPLOYMENT_DATACENTER, "datacenter");
         Config complete = ConfigBootstrap.getConfig();
 
         // boot up server using the route as defined below

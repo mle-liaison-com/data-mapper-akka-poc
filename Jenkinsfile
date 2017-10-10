@@ -6,11 +6,11 @@ node('agent') {
     }
 
     stage('build') {
-       sh "./gradlew clean build"
+        sh "./gradlew clean build"
     }
 
     stage('test') {
-       sh "./gradlew test"
+        sh "./gradlew test"
     }
 
     stage('dist') {
