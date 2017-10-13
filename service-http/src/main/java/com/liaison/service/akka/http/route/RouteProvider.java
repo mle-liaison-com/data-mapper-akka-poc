@@ -1,4 +1,4 @@
-package com.liaison.service.akka.core.route;
+package com.liaison.service.akka.http.route;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;

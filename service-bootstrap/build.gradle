@@ -11,6 +11,4 @@ distributions {
 
 dependencies {
     compile project(path: ':service-implementation')
-    compile 'com.typesafe.akka:akka-http-jackson_2.12:10.0.10'
-    compile 'com.typesafe.akka:akka-stream-kafka_2.12:0.17'
 }

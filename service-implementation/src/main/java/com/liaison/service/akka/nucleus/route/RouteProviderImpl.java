@@ -2,7 +2,7 @@ package com.liaison.service.akka.nucleus.route;
 
 import akka.actor.ActorSystem;
 import akka.http.javadsl.server.Route;
-import com.liaison.service.akka.core.route.RouteProvider;
+import com.liaison.service.akka.http.route.RouteProvider;
 
 import static akka.http.javadsl.server.Directives.route;
 

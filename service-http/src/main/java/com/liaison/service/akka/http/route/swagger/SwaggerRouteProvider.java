@@ -1,10 +1,10 @@
-package com.liaison.service.akka.core.route.swagger;
+package com.liaison.service.akka.http.route.swagger;
 
 import akka.actor.ActorSystem;
 import akka.http.javadsl.server.PathMatchers;
 import akka.http.javadsl.server.Route;
 import com.github.swagger.akka.javadsl.SwaggerGenerator;
-import com.liaison.service.akka.core.route.RouteProvider;
+import com.liaison.service.akka.http.route.RouteProvider;
 
 import java.util.List;
 import java.util.Set;
@@ -18,7 +18,7 @@ import static akka.http.javadsl.server.Directives.route;
 // TODO look into using reflection utils to load packages, instead of classes
 public class SwaggerRouteProvider implements RouteProvider {
 
-    public static final String CONFIG_SWAGGER_CLASSES = "com.liaison.service.akka.swagger.classes";
+    public static final String CONFIG_SWAGGER_CLASSES = "com.liaison.service.akka.http.swagger.classes";
 
     private final ActorSystem system;
 

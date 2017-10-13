@@ -1,4 +1,4 @@
-package com.liaison.service.akka.core.route.swagger;
+package com.liaison.service.akka.http.route.swagger;
 
 import com.github.swagger.akka.javadsl.Converter;
 import com.github.swagger.akka.javadsl.SwaggerGenerator;

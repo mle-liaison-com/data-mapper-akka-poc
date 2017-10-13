@@ -1,47 +1,43 @@
 package com.liaison.service.akka.bootstrap;
 
 import akka.actor.ActorSystem;
-import akka.http.javadsl.server.HttpApp;
-import akka.http.javadsl.server.Route;
-import akka.http.javadsl.settings.ServerSettings;
-import akka.stream.ActorMaterializer;
 import com.liaison.service.akka.bootstrap.config.ConfigBootstrap;
-import com.liaison.service.akka.core.route.RouteProvider;
-import com.liaison.service.akka.core.route.swagger.SwaggerRouteProvider;
-import com.liaison.service.akka.nucleus.route.RouteProviderImpl;
+import com.liaison.service.akka.core.BootstrapModule;
 import com.typesafe.config.Config;
 
-public final class ServiceBootstrap extends HttpApp {
+public final class ServiceBootstrap {
 
-    private final ActorSystem system;
-    private final RouteProvider routeProvider;
+    public static final String CONFIG_BOOTSTRAP_MODULE_CLASS = "com.liaison.service.akka.bootstrap.class";
 
-    private ServiceBootstrap(ActorSystem system, RouteProvider routeProvider) {
-        this.system = system;
-        this.routeProvider = routeProvider;
-    }
-
-    @Override
-    protected Route routes() {
-        return route(routeProvider.create(), new SwaggerRouteProvider(system).create());
-    }
-
-    public static final String CONFIG_AKKA_HTTP_SERVER_HOST = "akka.http.server.host";
-    public static final String CONFIG_AKKA_HTTP_SERVER_PORT = "akka.http.server.port";
-
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         Config complete = ConfigBootstrap.getConfig();
 
         // boot up server using the route as defined below
         ActorSystem system = ActorSystem.create("akka-service", complete);
-        ActorMaterializer materializer = ActorMaterializer.create(system);
 
-        //In order to acces s all directives we need an instance where the routes are defined.
-        ServiceBootstrap app = new ServiceBootstrap(system, new RouteProviderImpl(system));
-        app.startServer(complete.getString(CONFIG_AKKA_HTTP_SERVER_HOST),
-                complete.getInt(CONFIG_AKKA_HTTP_SERVER_PORT),
-                ServerSettings.create(complete));
+        String className = complete.getString(CONFIG_BOOTSTRAP_MODULE_CLASS);
+        if (className == null || className.isEmpty()) {
+            throw new IllegalStateException(String.format("%s is not configured or left empty.", CONFIG_BOOTSTRAP_MODULE_CLASS));
+        }
 
-        system.terminate();
+        Class<?> clazz;
+        try {
+            clazz = Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException("Unable to load class.", e);
+        }
+
+        if (!BootstrapModule.class.isAssignableFrom(clazz)) {
+            throw new IllegalStateException("Bootstrap class must implement " + BootstrapModule.class.getName());
+        }
+
+        try {
+            BootstrapModule bootstrapModule = clazz.asSubclass(BootstrapModule.class).newInstance();
+            bootstrapModule.configure(system);
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new IllegalStateException("Unexpected exception while trying to bootstrap the service.", e);
+        } finally {
+            system.terminate();
+        }
     }
 }

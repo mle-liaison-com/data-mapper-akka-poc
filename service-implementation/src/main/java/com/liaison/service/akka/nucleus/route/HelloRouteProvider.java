@@ -7,7 +7,7 @@ import akka.http.javadsl.model.HttpResponse;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.Route;
 import akka.routing.FromConfig;
-import com.liaison.service.akka.core.route.RouteProvider;
+import com.liaison.service.akka.http.route.RouteProvider;
 import com.liaison.service.akka.nucleus.actor.HelloWorldActor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

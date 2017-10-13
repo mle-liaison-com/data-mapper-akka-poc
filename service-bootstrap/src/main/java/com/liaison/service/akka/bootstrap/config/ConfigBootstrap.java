@@ -4,6 +4,8 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 
 public final class ConfigBootstrap {
@@ -17,6 +19,7 @@ public final class ConfigBootstrap {
     public static final String CONFIG_AKKA_DEPLOYMENT_ENVIRONMENT = "akka.deployment.environment";
     public static final String CONFIG_AKKA_DEPLOYMENT_REGION = "akka.deployment.region";
     public static final String CONFIG_AKKA_DEPLOYMENT_DATACENTER = "akka.deployment.datacenter";
+    public static final String CONFIG_AKKA_ADDITIONAL_URLS = "akka.configurationSource.additionalUrls";
 
     private static final Config COMPLETE;
     static {
@@ -43,23 +46,20 @@ public final class ConfigBootstrap {
         }
 
         Config combined = ConfigFactory.load();
-        combined = combine(getConfigName(applicationId), combined);
-        combined = combine(getConfigName(applicationId, stack), combined);
-        combined = combine(getConfigName(applicationId, environment), combined);
-        combined = combine(getConfigName(applicationId, environment, region), combined);
-        COMPLETE = combine(getConfigName(applicationId, environment, datacenter), combined);
-        // TODO secure.properties
+        combined = combine(loadConfigByName(applicationId), combined);
+        combined = combine(loadConfigByName(applicationId, stack), combined);
+        combined = combine(loadConfigByName(applicationId, environment), combined);
+        combined = combine(loadConfigByName(applicationId, environment, region), combined);
+        combined = combine(loadConfigByName(applicationId, environment, datacenter), combined);
+
+        String additionalUrls = System.getProperty(CONFIG_AKKA_ADDITIONAL_URLS);
+        if (additionalUrls != null) {
+            combined = combine(loadConfigFromUrl(additionalUrls), combined);
+        }
+
+        COMPLETE = combined;
     }
 
-    private static String getConfigName(String applicationId, String... names) {
-        return Arrays.stream(names).reduce(applicationId, (a, b) -> a + "-" + b);
-    }
-
-    private static Config combine(String baseConfigName, Config fallback) {
-        Config base = getStrictConfig(baseConfigName);
-        Config combined = base.withFallback(fallback);
-        return ConfigFactory.load(combined);
-    }
 
     /**
      * {@link ConfigFactory#load(String)} involves 3 steps
@@ -71,12 +71,29 @@ public final class ConfigBootstrap {
      *  To preserve all user provided configurations,
      *  {@link ConfigFactory#parseResourcesAnySyntax(String)} needs to be used in isolation.
      *
-     * @param configName name of the config file
+     * @param applicationId name of the application
+     * @param names additional config names
      * @return Config object containing configs defined in specified file only
      */
-    private static Config getStrictConfig(String configName) {
-        return ConfigFactory.parseResourcesAnySyntax(configName,
-                ConfigParseOptions.defaults().setAllowMissing(false));
+    private static Config loadConfigByName(String applicationId, String... names) {
+        String configName = Arrays.stream(names).reduce(applicationId, (a, b) -> a + "-" + b);
+        return ConfigFactory.parseResourcesAnySyntax(configName, ConfigParseOptions.defaults().setAllowMissing(false));
+    }
+
+    private static Config loadConfigFromUrl(String urlStr) {
+        URL url;
+        try {
+            url = new URL(urlStr);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("Unable to convert property into URL", e);
+        }
+
+        return ConfigFactory.parseURL(url, ConfigParseOptions.defaults().setAllowMissing(false));
+    }
+
+    private static Config combine(Config base, Config fallback) {
+        Config combined = base.withFallback(fallback);
+        return ConfigFactory.load(combined);
     }
 
     public static Config getConfig() {

@@ -2,4 +2,4 @@ rootProject.name = 'g2-akka-nucleus'
 include 'service-bootstrap'
 include 'service-implementation'
 include 'service-core'
-
+include 'service-http'
