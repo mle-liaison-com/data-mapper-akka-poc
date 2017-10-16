@@ -14,9 +14,11 @@ import static com.liaison.service.akka.http.BaseHttpApp.CONFIG_HTTP_SERVER_PORT;
 
 public class BootstrapModuleImpl implements BootstrapModule {
 
+    @Override
     public void configure(ActorSystem system) {
         Config config = system.settings().config();
 
+        // HttpApp#startServer call MUST be at the end of the method as it is blocking
         BaseHttpApp app = new BaseHttpApp(system, new RouteProviderImpl(system));
         try {
             app.startServer(config.getString(CONFIG_HTTP_SERVER_HOST),
