@@ -5,6 +5,16 @@ import com.liaison.service.akka.bootstrap.config.ConfigBootstrap;
 import com.liaison.service.akka.core.BootstrapModule;
 import com.typesafe.config.Config;
 
+/**
+ * This class is responsible for bootstrapping the whole service.
+ *
+ * Bootstrapping steps are
+ * 1. Load {@link Config} from {@link ConfigBootstrap}
+ * 2. Lookup BootstrapModule using {@value CONFIG_BOOTSTRAP_MODULE_CLASS} value
+ * 3. Run BootstrapModule
+ *
+ * Failure in any one of those steps will result in service bootstrap failure.
+ */
 public final class ServiceBootstrap {
 
     public static final String CONFIG_BOOTSTRAP_MODULE_CLASS = "com.liaison.service.akka.bootstrap.class";

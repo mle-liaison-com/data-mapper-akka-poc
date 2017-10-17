@@ -4,10 +4,6 @@ import com.liaison.service.akka.core.BaseActor;
 
 public class AsyncActor extends BaseActor {
 
-    public AsyncActor(String gpuid) {
-        super(gpuid);
-    }
-
     @Override
     public Receive createReceive() {
         return receiveBuilder()

@@ -13,12 +13,37 @@ import static akka.http.javadsl.server.Directives.completeWithFuture;
 import static akka.http.javadsl.server.Directives.handleExceptions;
 import static akka.pattern.PatternsCS.ask;
 
+/**
+ * This interface provides a common {@link Route} generation method, as well as helper methods
+ * for creating routes using different directives.
+ *
+ * Use of this interface is completely optional, and user may decide to create a {@link Route} on its own.
+ */
 public interface RouteProvider {
-
-    Route create();
 
     String CONFIG_ACTOR_TIMEOUT = "com.liaison.service.akka.actor.timeout";
 
+    /**
+     * Returns a Route
+     *
+     * @return {@link Route}
+     */
+    Route create();
+
+    /**
+     * Returns a {@link Route} that invokes an {@link akka.actor.Actor}
+     * with error handling via {@link akka.http.javadsl.server.Directives#handleExceptions} directive
+     *
+     * When using this default method, exception needs to be properly wrapped with {@link akka.actor.Status.Failure}.
+     * Otherwise, response will not be sent until Actor timeout is reached.
+     *
+     * @param system {@link ActorSystem} of the service
+     * @param ref {@link ActorRef} of an {@link akka.actor.Actor} to be invoked
+     * @param message Message to actor
+     * @param exceptionFunction Exception handler
+     * @param responseFunction Response handler
+     * @return {@link Route} that invokes specified {@link akka.actor.Actor}
+     */
     default Route invokeActorWithExceptionHandler(final ActorSystem system, final ActorRef ref, Object message,
                                                   Function<Throwable, Route> exceptionFunction,
                                                   Function<Object, HttpResponse> responseFunction) {

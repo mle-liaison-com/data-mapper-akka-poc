@@ -8,6 +8,17 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 
+/**
+ * This class provides an eagerly initialized singleton {@link Config} that is used by the whole service.
+ * As configurations must be provided to create an {@link akka.actor.ActorSystem}, there is no need to lazily initialize.
+ *
+ * Configuration files loaded by this class should conform to existing configuration hierarchy used by Alloy platform.
+ * See <a href="https://github.com/LiaisonTechnologies/g2-lib-configuration/blob/master/library/README.md">g2-lib-configuration</a>
+ * Failure to provide any one of the files will result in bootstrap failure.
+ *
+ * Also, most of configuration changes go through a full SDLC, and even in-place changes are assumed to require a restart.
+ * Thus, it will NOT support dynamic configuration loading.
+ */
 public final class ConfigBootstrap {
 
     private ConfigBootstrap() {
@@ -81,14 +92,12 @@ public final class ConfigBootstrap {
     }
 
     private static Config loadConfigFromUrl(String urlStr) {
-        URL url;
         try {
-            url = new URL(urlStr);
+            URL url = new URL(urlStr);
+            return ConfigFactory.parseURL(url, ConfigParseOptions.defaults().setAllowMissing(false));
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException("Unable to convert property into URL", e);
         }
-
-        return ConfigFactory.parseURL(url, ConfigParseOptions.defaults().setAllowMissing(false));
     }
 
     private static Config combine(Config base, Config fallback) {
@@ -96,6 +105,11 @@ public final class ConfigBootstrap {
         return ConfigFactory.load(combined);
     }
 
+    /**
+     * Getter for service {@link Config}
+     *
+     * @return eagerly initialized singleton {@link Config} instance
+     */
     public static Config getConfig() {
         return COMPLETE;
     }

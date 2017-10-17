@@ -21,7 +21,6 @@ import scala.concurrent.duration.Duration;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import java.util.Collections;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static akka.http.javadsl.server.Directives.complete;
@@ -41,9 +40,7 @@ public class SampleRouteProvider implements RouteProvider {
         this.system = system;
 
         SupervisorStrategy failStrategy = new OneForOneStrategy(5, Duration.create(1, TimeUnit.MINUTES), Collections.singletonList(Exception.class));
-        this.failRef = system.actorOf(
-                FromConfig.getInstance().withSupervisorStrategy(failStrategy).props(Props.create(FailActor.class, "test")),
-                "fail");
+        this.failRef = system.actorOf(FromConfig.getInstance().withSupervisorStrategy(failStrategy).props(Props.create(FailActor.class)), "fail");
     }
 
     @Override
@@ -56,7 +53,7 @@ public class SampleRouteProvider implements RouteProvider {
     @ApiResponses(value = { @ApiResponse(code = 500, message = "Internal server error") })
     public Route asyncGet() {
         return path("async", () -> get(() -> {
-            system.actorOf(Props.create(AsyncActor.class, UUID.randomUUID().toString())).tell("", ActorRef.noSender());
+            system.actorOf(Props.create(AsyncActor.class)).tell("", ActorRef.noSender());
             return complete(StatusCodes.NO_CONTENT);
         }));
     }

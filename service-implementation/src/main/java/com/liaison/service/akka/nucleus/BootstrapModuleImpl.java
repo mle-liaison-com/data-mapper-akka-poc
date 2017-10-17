@@ -19,7 +19,7 @@ public class BootstrapModuleImpl implements BootstrapModule {
         Config config = system.settings().config();
 
         // HttpApp#startServer call MUST be at the end of the method as it is blocking
-        BaseHttpApp app = new BaseHttpApp(system, new RouteProviderImpl(system));
+        BaseHttpApp app = new BaseHttpApp(system, new RouteProviderImpl(system).create());
         try {
             app.startServer(config.getString(CONFIG_HTTP_SERVER_HOST),
                     config.getInt(CONFIG_HTTP_SERVER_PORT),

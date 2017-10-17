@@ -32,7 +32,7 @@ public class HelloRouteProvider implements RouteProvider {
 
     HelloRouteProvider(ActorSystem system) {
         this.system = system;
-        this.helloRef = system.actorOf(FromConfig.getInstance().props(Props.create(HelloWorldActor.class, "test")), "hello");
+        this.helloRef = system.actorOf(FromConfig.getInstance().props(Props.create(HelloWorldActor.class)), "hello");
     }
 
     @Override

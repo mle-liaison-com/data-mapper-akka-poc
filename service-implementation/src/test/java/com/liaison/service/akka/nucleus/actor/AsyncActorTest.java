@@ -11,8 +11,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.UUID;
-
 import static org.junit.Assert.assertTrue;
 
 public class AsyncActorTest {
@@ -32,7 +30,7 @@ public class AsyncActorTest {
     @Test
     public void testAsyncActorLogging() {
         new TestKit(system) {{
-            final ActorRef subject = system.actorOf(Props.create(AsyncActor.class, UUID.randomUUID().toString()));
+            final ActorRef subject = system.actorOf(Props.create(AsyncActor.class));
             final boolean result = new EventFilter(Logging.Info.class, system)
                     .message("received async message test")
                     .occurrences(1)
@@ -47,7 +45,7 @@ public class AsyncActorTest {
     @Test
     public void testAsyncActorMessage() {
         new TestKit(system) {{
-            final ActorRef subject = system.actorOf(Props.create(AsyncActor.class, UUID.randomUUID().toString()));
+            final ActorRef subject = system.actorOf(Props.create(AsyncActor.class));
             within(duration("3 seconds"), () -> {
                 subject.tell("hello", getRef());
                 expectNoMsg();

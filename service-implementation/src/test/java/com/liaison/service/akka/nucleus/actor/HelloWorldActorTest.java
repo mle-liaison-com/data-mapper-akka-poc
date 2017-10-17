@@ -26,7 +26,7 @@ public class HelloWorldActorTest {
     @Test
     public void testSyncActorMessage() {
         new TestKit(system) {{
-            final ActorRef subject = system.actorOf(FromConfig.getInstance().props(Props.create(HelloWorldActor.class, "test")), "hello");
+            final ActorRef subject = system.actorOf(FromConfig.getInstance().props(Props.create(HelloWorldActor.class)), "hello");
             within(duration("3 seconds"), () -> {
                 subject.tell("hello", getRef());
                 expectMsg("Hello, World!");
