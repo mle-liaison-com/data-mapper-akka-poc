@@ -1,10 +1,14 @@
 package com.liaison.service.akka.nucleus.route;
 
+import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import akka.actor.Props;
 import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.testkit.JUnitRouteTest;
 import akka.http.javadsl.testkit.TestRoute;
+import akka.routing.FromConfig;
 import akka.testkit.javadsl.TestKit;
+import com.liaison.service.akka.nucleus.actor.HelloWorldActor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +21,8 @@ public class HelloRouteProviderTest extends JUnitRouteTest {
     @Before
     public void setup() {
         system = ActorSystem.create();
-        testRoute = testRoute(new HelloRouteProvider(system).create());
+        ActorRef helloRef = system.actorOf(FromConfig.getInstance().props(Props.create(HelloWorldActor.class)), "hello");
+        testRoute = testRoute(new HelloRouteProvider(system, helloRef).create());
     }
 
     @After

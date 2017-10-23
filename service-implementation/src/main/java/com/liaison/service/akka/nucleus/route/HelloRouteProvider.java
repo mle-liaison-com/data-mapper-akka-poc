@@ -2,13 +2,10 @@ package com.liaison.service.akka.nucleus.route;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import akka.actor.Props;
 import akka.http.javadsl.model.HttpResponse;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.Route;
-import akka.routing.FromConfig;
 import com.liaison.service.akka.http.route.RouteProvider;
-import com.liaison.service.akka.nucleus.actor.HelloWorldActor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -30,9 +27,9 @@ public class HelloRouteProvider implements RouteProvider {
     private final ActorSystem system;
     private final ActorRef helloRef;
 
-    HelloRouteProvider(ActorSystem system) {
+    HelloRouteProvider(ActorSystem system, ActorRef helloRef) {
         this.system = system;
-        this.helloRef = system.actorOf(FromConfig.getInstance().props(Props.create(HelloWorldActor.class)), "hello");
+        this.helloRef = helloRef;
     }
 
     @Override

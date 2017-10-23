@@ -1,5 +1,6 @@
 docker build .
-docker run -i -t -p 8989:8989 <image name>
+
+docker run -i -t -p 8989:8989 ${image name}
 
 remote
 - akka.actor.provider = remote
@@ -24,6 +25,7 @@ remote
     - akka.remote.artery.enabled = on
     - akka.remote.artery.canonical.host = 0.0.0.0
     - akka.remote.artery.canonical.port = 2552
+    - INFO : Remoting started; listening on address: [akka://akka-nucleus@0.0.0.0:25520] with UID [3326379590819384954]
         
 
 cluster
@@ -31,3 +33,13 @@ cluster
 - akka.extensions = ["akka.cluster.client.ClusterClientReceptionist"]
 - akka.cluster.seed-nodes = ["akka.ssl.tcp://akka-nucleus@0.0.0.0:2552"]
 - akka.cluster.client.initial-contacts = ["akka.ssl.tcp://akka-nucleus@0.0.0.0:2552/system/receptionist"]
+
+- server
+    - Cluster Node [akka://akka-nucleus@0.0.0.0:25520] - Starting up...
+    - Cluster Node [akka://akka-nucleus@0.0.0.0:25520] - Started up successfully
+- client
+    - INFO : Connected to [akka://akka-nucleus@0.0.0.0:25520/system/receptionist]
+
+security
+- akka.remote.untrusted-mode = on
+- akka.remote.trusted-selection-paths = ["placeholder"]

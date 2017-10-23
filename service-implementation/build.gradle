@@ -3,6 +3,7 @@ dependencies {
     compile project(path: ':service-http')
 
     compile 'com.typesafe.akka:akka-remote_2.12:2.5.6'
+    compile 'com.typesafe.akka:akka-cluster-tools_2.12:2.5.6'
 
     testCompile 'com.typesafe.akka:akka-testkit_2.12:2.5.6'
     testCompile 'com.typesafe.akka:akka-http-testkit_2.12:10.0.10'

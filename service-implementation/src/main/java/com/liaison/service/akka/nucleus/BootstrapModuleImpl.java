@@ -1,9 +1,18 @@
 package com.liaison.service.akka.nucleus;
 
+import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import akka.actor.Props;
+import akka.actor.Status;
 import akka.http.javadsl.settings.ServerSettings;
+import akka.routing.FromConfig;
+import com.liaison.service.akka.core.ActorMessageConsumer;
 import com.liaison.service.akka.core.BootstrapModule;
+import com.liaison.service.akka.core.EntryActor;
+import com.liaison.service.akka.core.model.RoleBasedMessage;
 import com.liaison.service.akka.http.BaseHttpApp;
+import com.liaison.service.akka.nucleus.actor.HelloWorldActor;
+import com.liaison.service.akka.nucleus.model.HelloMessage;
 import com.liaison.service.akka.nucleus.route.RouteProviderImpl;
 import com.typesafe.config.Config;
 
@@ -18,8 +27,22 @@ public class BootstrapModuleImpl implements BootstrapModule {
     public void configure(ActorSystem system) {
         Config config = system.settings().config();
 
+        ActorRef helloRef = system.actorOf(FromConfig.getInstance().props(Props.create(HelloWorldActor.class)), "hello");
+        ActorMessageConsumer<RoleBasedMessage> consumer = (msg, ctx, sender) -> {
+            // check roles and route message to appropriate actor
+            if (msg instanceof HelloMessage) {
+                helloRef.forward(msg, ctx);
+            } else {
+                Exception exception = new IllegalStateException("Unknown Message.");
+                sender.tell(new Status.Failure(exception), ActorRef.noSender());
+                throw exception;
+            }
+        };
+        // expose entry actor only in akka.remote.trusted-selection-paths
+        system.actorOf(Props.create(EntryActor.class, consumer), "entry");
+
         // HttpApp#startServer call MUST be at the end of the method as it is blocking
-        BaseHttpApp app = new BaseHttpApp(system, new RouteProviderImpl(system).create());
+        BaseHttpApp app = new BaseHttpApp(system, new RouteProviderImpl(system, helloRef).create());
         try {
             app.startServer(config.getString(CONFIG_HTTP_SERVER_HOST),
                     config.getInt(CONFIG_HTTP_SERVER_PORT),
