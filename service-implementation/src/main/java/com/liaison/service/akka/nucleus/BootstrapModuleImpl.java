@@ -33,7 +33,7 @@ public class BootstrapModuleImpl implements BootstrapModule {
             if (msg instanceof HelloMessage) {
                 helloRef.forward(msg, ctx);
             } else {
-                Exception exception = new IllegalStateException("Unknown Message.");
+                Exception exception = new IllegalStateException("Unknown Message Type.");
                 sender.tell(new Status.Failure(exception), ActorRef.noSender());
                 throw exception;
             }

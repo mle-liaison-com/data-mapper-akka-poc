@@ -26,10 +26,10 @@ remote
     - akka.remote.artery.canonical.host = 0.0.0.0
     - akka.remote.artery.canonical.port = 2552
     - INFO : Remoting started; listening on address: [akka://akka-nucleus@0.0.0.0:25520] with UID [3326379590819384954]
-        
 
 cluster
-- akka.actor.provider = cluster- akka.extensions = ["akka.cluster.client.ClusterClientReceptionist"]
+- akka.actor.provider = cluster
+- akka.extensions = ["akka.cluster.client.ClusterClientReceptionist"]
 - akka.cluster.seed-nodes = ["akka.ssl.tcp://akka-nucleus@0.0.0.0:2552"]
 - akka.cluster.client.initial-contacts = ["akka.ssl.tcp://akka-nucleus@0.0.0.0:2552/system/receptionist"]
 - server

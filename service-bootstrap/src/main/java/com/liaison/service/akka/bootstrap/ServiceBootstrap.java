@@ -2,8 +2,14 @@ package com.liaison.service.akka.bootstrap;
 
 import akka.actor.ActorSystem;
 import com.liaison.service.akka.bootstrap.config.ConfigBootstrap;
+import com.liaison.service.akka.core.ActorSystemWrapper;
 import com.liaison.service.akka.core.BootstrapModule;
 import com.typesafe.config.Config;
+
+import java.util.List;
+
+import static com.liaison.service.akka.core.ActorSystemWrapper.CONFIG_AKKA_REMOTE_TRUSTED_SELECTION_PATHS;
+import static com.liaison.service.akka.core.ActorSystemWrapper.CONFIG_AKKA_REMOTE_UNTRUSTED_MODE;
 
 /**
  * This class is responsible for bootstrapping the whole service.
@@ -28,6 +34,12 @@ public final class ServiceBootstrap {
             throw new IllegalStateException(String.format("%s is not configured or left empty.", CONFIG_BOOTSTRAP_MODULE_CLASS));
         }
 
+        boolean untrustedMode = complete.getBoolean(CONFIG_AKKA_REMOTE_UNTRUSTED_MODE);
+        List<String> trustedSelectionPaths = complete.getStringList(CONFIG_AKKA_REMOTE_TRUSTED_SELECTION_PATHS);
+        if (!untrustedMode || trustedSelectionPaths == null || trustedSelectionPaths.size() == 0) {
+            throw new IllegalStateException(String.format("%s must be turned on and %s must be non-empty list to enable Actor authorization", CONFIG_AKKA_REMOTE_UNTRUSTED_MODE, CONFIG_AKKA_REMOTE_TRUSTED_SELECTION_PATHS));
+        }
+
         Class<?> clazz;
         try {
             clazz = Class.forName(className);
@@ -39,7 +51,7 @@ public final class ServiceBootstrap {
             throw new IllegalStateException("Bootstrap class must implement " + BootstrapModule.class.getName());
         }
 
-        ActorSystem system = ActorSystem.create(complete.getString(CONFIG_ACTOR_SYSTEM_NAME), complete);
+        ActorSystem system = new ActorSystemWrapper(ActorSystem.create(complete.getString(CONFIG_ACTOR_SYSTEM_NAME), complete));
         try {
             BootstrapModule bootstrapModule = clazz.asSubclass(BootstrapModule.class).newInstance();
             bootstrapModule.configure(system);
