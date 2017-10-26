@@ -7,6 +7,7 @@ import com.typesafe.config.ConfigParseOptions;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * This class provides an eagerly initialized singleton {@link Config} that is used by the whole service.
@@ -39,33 +40,20 @@ public final class ConfigBootstrap {
         final String environment = System.getProperty(CONFIG_AKKA_DEPLOYMENT_ENVIRONMENT);
         final String region = System.getProperty(CONFIG_AKKA_DEPLOYMENT_REGION);
         final String datacenter = System.getProperty(CONFIG_AKKA_DEPLOYMENT_DATACENTER);
-        if (applicationId == null || stack == null || environment == null || region == null || datacenter == null) {
-            throw new IllegalArgumentException(
-                    String.format(
-                            "Missing required system properties. %s = %s, %s = %s, %s = %s, %s = %s, %s = %s",
-                            CONFIG_AKKA_DEPLOYMENT_APPLICATIONID,
-                            applicationId,
-                            CONFIG_AKKA_DEPLOYMENT_STACK,
-                            stack,
-                            CONFIG_AKKA_DEPLOYMENT_ENVIRONMENT,
-                            environment,
-                            CONFIG_AKKA_DEPLOYMENT_REGION,
-                            region,
-                            CONFIG_AKKA_DEPLOYMENT_DATACENTER,
-                            datacenter
-                    ));
-        }
 
         Config combined = ConfigFactory.load();
-        combined = combine(loadConfigByName(applicationId), combined);
-        combined = combine(loadConfigByName(applicationId, stack), combined);
-        combined = combine(loadConfigByName(applicationId, environment), combined);
-        combined = combine(loadConfigByName(applicationId, environment, region), combined);
-        combined = combine(loadConfigByName(applicationId, environment, datacenter), combined);
 
-        String additionalUrls = System.getProperty(CONFIG_AKKA_ADDITIONAL_URLS);
-        if (additionalUrls != null) {
-            combined = combine(loadConfigFromUrl(additionalUrls), combined);
+        if (applicationId != null) {
+            combined = combine(loadConfigByName(applicationId), combined);
+            combined = combine(loadConfigByName(applicationId, stack), combined);
+            combined = combine(loadConfigByName(applicationId, environment), combined);
+            combined = combine(loadConfigByName(applicationId, environment, region), combined);
+            combined = combine(loadConfigByName(applicationId, environment, datacenter), combined);
+
+            String additionalUrls = System.getProperty(CONFIG_AKKA_ADDITIONAL_URLS);
+            if (additionalUrls != null) {
+                combined = combine(loadConfigFromUrl(additionalUrls), combined);
+            }
         }
 
         COMPLETE = combined;
@@ -87,14 +75,14 @@ public final class ConfigBootstrap {
      * @return Config object containing configs defined in specified file only
      */
     private static Config loadConfigByName(String applicationId, String... names) {
-        String configName = Arrays.stream(names).reduce(applicationId, (a, b) -> a + "-" + b);
-        return ConfigFactory.parseResourcesAnySyntax(configName, ConfigParseOptions.defaults().setAllowMissing(false));
+        String configName = Arrays.stream(names).filter(Objects::nonNull).reduce(applicationId, (a, b) -> a + "-" + b);
+        return ConfigFactory.parseResourcesAnySyntax(configName, ConfigParseOptions.defaults().setAllowMissing(true));
     }
 
     private static Config loadConfigFromUrl(String urlStr) {
         try {
             URL url = new URL(urlStr);
-            return ConfigFactory.parseURL(url, ConfigParseOptions.defaults().setAllowMissing(false));
+            return ConfigFactory.parseURL(url, ConfigParseOptions.defaults().setAllowMissing(true));
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException("Unable to convert property into URL", e);
         }
