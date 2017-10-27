@@ -1,12 +1,11 @@
 FROM docker.ci.liaison.com/alloy/jre:1.6.0
 
-ENV APPLICATION_ID g2-akka-nucleus
+ARG APPLICATION_ID=akka-nucleus
+ENV APPLICATION_ID $APPLICATION_ID
 
 EXPOSE 2552
 EXPOSE 8989
 
 ADD service-bootstrap/build/distributions/$APPLICATION_ID.tar /opt/liaison/
 
-WORKDIR /opt/liaison/$APPLICATION_ID/bin
-
-CMD ./service-bootstrap
+ENTRYPOINT ./opt/liaison/$APPLICATION_ID/bin/service-bootstrap

@@ -1,6 +1,8 @@
 docker build .
 
-docker run -i -t -p 8989:8989 ${image name}
+docker run -it --rm -p 8989:8989 ${image name}
+
+docker run -it --rm -e SERVICE_BOOTSTRAP_OPTS="-Dakka.deployment.applicationId=akka-nucleus -Dakka.deployment.stack=stack -Dakka.deployment.environment=dev -Dakka.deployment.region=region -Dakka.deployment.datacenter=datacenter" -p 8989:8989 ${image name}
 
 remote
 - akka.actor.provider = remote

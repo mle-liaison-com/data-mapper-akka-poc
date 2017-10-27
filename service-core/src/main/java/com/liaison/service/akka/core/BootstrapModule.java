@@ -13,6 +13,8 @@ import akka.actor.ActorSystem;
  */
 public interface BootstrapModule {
 
+    String CONFIG_BOOTSTRAP_CLASS = "com.liaison.service.akka.bootstrap.class";
+
     /**
      * Configures and initializes all necessary service components.
      *
