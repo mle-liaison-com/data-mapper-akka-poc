@@ -1,18 +1,12 @@
 apply plugin: 'application'
 
+mainClassName = "com.liaison.service.akka.bootstrap.ServiceBootstrap"
 
 distributions {
     main {
         baseName = rootProject.name
         version = ''
     }
-}
-
-tasks.withType(CreateStartScripts) {
-    def script = 'script/entry.sh'
-    assert project.file(script).exists()
-    unixStartScriptGenerator.template = resources.text.fromFile(script)
-    mainClassName = "com.liaison.service.akka.bootstrap.ServiceBootstrap"
 }
 
 dependencies {

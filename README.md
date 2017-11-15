@@ -1,8 +1,6 @@
-docker build .
+docker build --build-arg APPLICATION_ID=... .
 
-docker run -it --rm -p 8989:8989 ${image name}
-
-docker run -it --rm -e "APPLICATION_ID=..." -e "STACK=..." -e "ENVIRONMENT=..." -p 8989:8989 ${image name}
+docker run -it --rm -e "STACK=..." -e "ENVIRONMENT=..." -p 8989:8989 ${image name}
 
 remote
 - akka.actor.provider = remote

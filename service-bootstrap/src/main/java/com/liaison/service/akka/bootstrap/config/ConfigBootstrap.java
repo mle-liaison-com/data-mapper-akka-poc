@@ -26,20 +26,20 @@ public final class ConfigBootstrap {
 
     }
 
-    public static final String CONFIG_AKKA_DEPLOYMENT_APPLICATIONID = "akka.deployment.applicationId";
-    public static final String CONFIG_AKKA_DEPLOYMENT_STACK = "akka.deployment.stack";
-    public static final String CONFIG_AKKA_DEPLOYMENT_ENVIRONMENT = "akka.deployment.environment";
-    public static final String CONFIG_AKKA_DEPLOYMENT_REGION = "akka.deployment.region";
-    public static final String CONFIG_AKKA_DEPLOYMENT_DATACENTER = "akka.deployment.datacenter";
-    public static final String CONFIG_AKKA_ADDITIONAL_URLS = "akka.configurationSource.additionalUrls";
+    private static final String ENVIRONMENT_VARIABLE_APPLICATION_ID = "APPLICATION_ID";
+    private static final String ENVIRONMENT_VARIABLE_STACK = "STACK";
+    private static final String ENVIRONMENT_VARIABLE_ENVIRONMENT = "ENVIRONMENT";
+    private static final String ENVIRONMENT_VARIABLE_REGION = "REGION";
+    private static final String ENVIRONMENT_VARIABLE_DATACENTER = "DATACENTER";
+    private static final String ENVIRONMENT_VARIABLE_ADDITIONAL_URLS = "ADDITIONAL_URLS";
 
     private static final Config COMPLETE;
     static {
-        final String applicationId = System.getProperty(CONFIG_AKKA_DEPLOYMENT_APPLICATIONID);
-        final String stack = System.getProperty(CONFIG_AKKA_DEPLOYMENT_STACK);
-        final String environment = System.getProperty(CONFIG_AKKA_DEPLOYMENT_ENVIRONMENT);
-        final String region = System.getProperty(CONFIG_AKKA_DEPLOYMENT_REGION);
-        final String datacenter = System.getProperty(CONFIG_AKKA_DEPLOYMENT_DATACENTER);
+        final String applicationId = System.getenv(ENVIRONMENT_VARIABLE_APPLICATION_ID);
+        final String stack = System.getenv(ENVIRONMENT_VARIABLE_STACK);
+        final String environment = System.getenv(ENVIRONMENT_VARIABLE_ENVIRONMENT);
+        final String region = System.getenv(ENVIRONMENT_VARIABLE_REGION);
+        final String datacenter = System.getenv(ENVIRONMENT_VARIABLE_DATACENTER);
 
         Config combined = ConfigFactory.load();
 
@@ -50,7 +50,7 @@ public final class ConfigBootstrap {
             combined = combine(loadConfigByName(applicationId, environment, region), combined);
             combined = combine(loadConfigByName(applicationId, environment, datacenter), combined);
 
-            String additionalUrls = System.getProperty(CONFIG_AKKA_ADDITIONAL_URLS);
+            String additionalUrls = System.getenv(ENVIRONMENT_VARIABLE_ADDITIONAL_URLS);
             if (additionalUrls != null) {
                 combined = combine(loadConfigFromUrl(additionalUrls), combined);
             }
