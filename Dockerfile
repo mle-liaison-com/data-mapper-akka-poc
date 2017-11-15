@@ -8,4 +8,4 @@ EXPOSE 8989
 
 ADD service-bootstrap/build/distributions/$APPLICATION_ID.tar /opt/liaison/
 
-ENTRYPOINT ["/opt/liaison/akka-nucleus/bin/entry.sh"]
+ENTRYPOINT ["/opt/liaison/akka-nucleus/bin/service-bootstrap"]

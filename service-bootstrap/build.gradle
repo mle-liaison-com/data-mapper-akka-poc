@@ -12,7 +12,6 @@ tasks.withType(CreateStartScripts) {
     def script = 'script/entry.sh'
     assert project.file(script).exists()
     unixStartScriptGenerator.template = resources.text.fromFile(script)
-    applicationName = "entry.sh"
     mainClassName = "com.liaison.service.akka.bootstrap.ServiceBootstrap"
 }
 
