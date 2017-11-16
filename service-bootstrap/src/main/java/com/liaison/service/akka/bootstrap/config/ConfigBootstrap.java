@@ -49,11 +49,11 @@ public final class ConfigBootstrap {
             combined = combine(loadConfigByName(applicationId, environment), combined);
             combined = combine(loadConfigByName(applicationId, environment, region), combined);
             combined = combine(loadConfigByName(applicationId, environment, datacenter), combined);
+        }
 
-            String additionalUrls = System.getenv(ENVIRONMENT_VARIABLE_ADDITIONAL_URLS);
-            if (additionalUrls != null) {
-                combined = combine(loadConfigFromUrl(additionalUrls), combined);
-            }
+        String additionalUrls = System.getenv(ENVIRONMENT_VARIABLE_ADDITIONAL_URLS);
+        if (additionalUrls != null) {
+            combined = combine(loadConfigFromUrl(additionalUrls), combined);
         }
 
         COMPLETE = combined;
