@@ -1,5 +1,7 @@
 apply plugin: 'application'
 
+mainClassName = "com.liaison.service.akka.bootstrap.ServiceBootstrap"
+
 distributions {
     main {
         baseName = rootProject.name
@@ -11,7 +13,7 @@ tasks.withType(CreateStartScripts) {
     def script = 'script/LiaisonUnixStartScript.txt'
     assert project.file(script).exists()
     unixStartScriptGenerator.template = resources.text.fromFile(script)
-    mainClassName = "com.liaison.service.akka.bootstrap.ServiceBootstrap"
+    defaultJvmOpts = ["-javaagent:${configurations.agent.singleFile}"]
 }
 
 dependencies {
