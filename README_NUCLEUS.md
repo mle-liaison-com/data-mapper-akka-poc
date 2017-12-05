@@ -41,3 +41,14 @@ cluster
 security
 - akka.remote.untrusted-mode = on
 - akka.remote.trusted-selection-paths = ["placeholder"]
+
+Working with Remote Repository
+- git remote add base git@github.com:LiaisonTechnologies/g2-akka-nucleus.git
+- git remote update
+- git pull base develop
+
+Creating a new Akka Service
+- modify files below
+    - settings.gradle
+    - k8s.d/deployment.json
+    - service-implementation
