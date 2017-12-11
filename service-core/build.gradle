@@ -1,10 +1,32 @@
+buildscript {
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.3'
+    }
+}
+
+apply plugin: 'com.google.protobuf'
+
 dependencies {
     compile 'com.typesafe.akka:akka-actor_2.11:2.5.8'
     compile 'com.typesafe.akka:akka-stream_2.11:2.5.8'
     compile 'com.typesafe.akka:akka-slf4j_2.11:2.5.8'
     compile 'ch.qos.logback:logback-classic:1.2.3'
 
-    compile ('com.liaison.dto:dto:4.+') {
-        exclude group: 'org.codehaus.jackson'
+    compile 'com.google.protobuf:protobuf-java:3.5.0'
+    compile 'com.google.code.findbugs:jsr305:3.0.2'
+}
+
+protobuf {
+    protoc {
+        // Download from repositories
+        artifact = 'com.google.protobuf:protoc:3.5.0'
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs "${protobuf.generatedFilesBaseDir}/main/java"
+        }
     }
 }
