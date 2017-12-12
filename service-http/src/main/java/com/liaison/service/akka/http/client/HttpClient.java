@@ -16,9 +16,9 @@ import java.util.function.BiConsumer;
 
 public class HttpClient {
 
-    private static final String CONFIG_HTTP_MAX_FAILURE = "com.liaison.service.akka.http.failure.max";
-    private static final String CONFIG_HTTP_TIMEOUT_CALL = "com.liaison.service.akka.http.failure.timeout.call";
-    private static final String CONFIG_HTTP_TIMEOUT_RESET = "com.liaison.service.akka.http.failure.timeout.reset";
+    private static final String CONFIG_HTTP_MAX_FAILURE = "com.liaison.service.akka.http.client.failure.max";
+    private static final String CONFIG_HTTP_TIMEOUT_CALL = "com.liaison.service.akka.http.client.failure.timeout.call";
+    private static final String CONFIG_HTTP_TIMEOUT_RESET = "com.liaison.service.akka.http.client.failure.timeout.reset";
 
     private final ActorSystem system;
     private final BiConsumer<HttpResponse, Throwable> action;
