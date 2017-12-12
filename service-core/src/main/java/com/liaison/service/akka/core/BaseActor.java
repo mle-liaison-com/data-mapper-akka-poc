@@ -26,7 +26,7 @@ public abstract class BaseActor extends AbstractActor {
      *
      * @return {@link Config} for this {@link akka.actor.Actor}
      */
-    protected Config getConfig() {
+    public Config getConfig() {
         return getContext().getSystem().settings().config();
     }
 
@@ -35,7 +35,7 @@ public abstract class BaseActor extends AbstractActor {
      *
      * @return {@link DiagnosticLoggingAdapter} for this {@link akka.actor.Actor}
      */
-    protected DiagnosticLoggingAdapter getLogger() {
+    public DiagnosticLoggingAdapter getLogger() {
         return logger;
     }
 }
