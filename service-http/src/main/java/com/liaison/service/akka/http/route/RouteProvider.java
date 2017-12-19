@@ -2,9 +2,15 @@ package com.liaison.service.akka.http.route;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import akka.http.javadsl.model.HttpEntity;
 import akka.http.javadsl.model.HttpResponse;
+import akka.http.javadsl.model.MediaTypes;
 import akka.http.javadsl.server.ExceptionHandler;
 import akka.http.javadsl.server.Route;
+import akka.http.javadsl.unmarshalling.Unmarshaller;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.Message;
+import com.google.protobuf.util.JsonFormat;
 
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
@@ -51,5 +57,17 @@ public interface RouteProvider {
         final ExceptionHandler handler = ExceptionHandler.newBuilder().matchAny(exceptionFunction::apply).build();
         final CompletionStage<HttpResponse> future = ask(ref, message, actorTimeout).thenApplyAsync(responseFunction);
         return handleExceptions(handler, () -> completeWithFuture(future));
+    }
+
+    default <T extends Message.Builder> Unmarshaller<? super HttpEntity, Object> protobufUnmarshaller(T obj) {
+        return Unmarshaller.forMediaType(MediaTypes.APPLICATION_JSON, Unmarshaller.entityToString())
+                .thenApply(s -> {
+                    try {
+                        JsonFormat.parser().ignoringUnknownFields().merge(s, obj);
+                        return obj.build();
+                    } catch (InvalidProtocolBufferException e) {
+                        throw new IllegalArgumentException("Unable to Unmarshall JSON as " + obj.getClass().toString(), e);
+                    }
+                });
     }
 }
