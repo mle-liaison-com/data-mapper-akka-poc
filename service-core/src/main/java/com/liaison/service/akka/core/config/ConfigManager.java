@@ -1,4 +1,4 @@
-package com.liaison.service.akka.bootstrap.config;
+package com.liaison.service.akka.core.config;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -20,9 +20,9 @@ import java.util.Objects;
  * Also, most of configuration changes go through a full SDLC, and even in-place changes are assumed to require a restart.
  * Thus, it will NOT support dynamic configuration loading.
  */
-public final class ConfigBootstrap {
+public final class ConfigManager {
 
-    private ConfigBootstrap() {
+    private ConfigManager() {
 
     }
 
