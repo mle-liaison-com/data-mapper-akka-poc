@@ -53,7 +53,10 @@ public final class ConfigManager {
 
         String additionalUrls = System.getenv(ENVIRONMENT_VARIABLE_ADDITIONAL_URLS);
         if (additionalUrls != null) {
-            combined = combine(loadConfigFromUrl(additionalUrls), combined);
+            String[] split = additionalUrls.split(",");
+            for (String url : split) {
+                combined = combine(loadConfigFromUrl(url), combined);
+            }
         }
 
         COMPLETE = combined;
