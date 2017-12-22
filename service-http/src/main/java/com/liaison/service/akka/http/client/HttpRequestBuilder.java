@@ -10,29 +10,52 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Simplified builder class to build {@link HttpRequest} with fluent API.
+ */
 public class HttpRequestBuilder {
 
     private final String method;
     private final String uri;
     private final Map<String, String> headerMap = new HashMap<>();
 
+    /**
+     * Constructor. User must provide HTTP method and URI as {@link String}
+     *
+     * @param method http method
+     * @param uri target uri
+     */
     public HttpRequestBuilder(@Nonnull String method, @Nonnull String uri) {
         this.method = method;
         this.uri = uri;
     }
 
+    /**
+     * Adds a HTTP header
+     *
+     * @param key header name
+     * @param value header value
+     * @return itself
+     */
     public HttpRequestBuilder withHeader(String key, String value) {
         headerMap.put(key, value);
         return this;
     }
 
+    /**
+     * Builds {@link HttpRequest} with user provided values
+     *
+     * @return {@link HttpRequest} instance
+     */
     public HttpRequest build() {
         Optional<HttpMethod> optional = HttpMethods.lookup(method.toUpperCase());
         if (!optional.isPresent()) {
             throw new IllegalArgumentException("invalid http method " + method);
         }
         HttpRequest request = HttpRequest.create(uri).withMethod(optional.get());
-        headerMap.forEach((key, value) -> request.addHeader(RawHeader.create(key, value)));
+        for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+            request = request.addHeader(RawHeader.create(entry.getKey(), entry.getValue()));
+        }
         return request;
     }
 }

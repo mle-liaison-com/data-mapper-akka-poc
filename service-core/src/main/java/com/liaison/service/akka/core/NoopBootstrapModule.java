@@ -2,6 +2,9 @@ package com.liaison.service.akka.core;
 
 import akka.actor.ActorSystem;
 
+/**
+ * Default {@link BootstrapModule} if {@value CONFIG_BOOTSTRAP_CLASS} is not provided in {@link com.typesafe.config.Config}
+ */
 public final class NoopBootstrapModule implements BootstrapModule {
 
     @Override

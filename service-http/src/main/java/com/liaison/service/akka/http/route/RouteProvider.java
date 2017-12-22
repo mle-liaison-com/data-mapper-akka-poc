@@ -59,11 +59,19 @@ public interface RouteProvider {
         return handleExceptions(handler, () -> completeWithFuture(future));
     }
 
+    /**
+     * Builds Protobuf class instance from {@link MediaTypes#APPLICATION_JSON} HttpEntity.
+     * To build JSON from Protobuf, please refer to {@link JsonFormat#printer()}
+     *
+     * @param obj Protobuf generated {@link Message.Builder} instance
+     * @param <T> Protobuf generated {@link Message.Builder} Class
+     * @return {@link Unmarshaller} to unmarshall Protobuf class
+     */
     default <T extends Message.Builder> Unmarshaller<? super HttpEntity, Object> protobufUnmarshaller(T obj) {
         return Unmarshaller.forMediaType(MediaTypes.APPLICATION_JSON, Unmarshaller.entityToString())
                 .thenApply(s -> {
                     try {
-                        JsonFormat.parser().ignoringUnknownFields().merge(s, obj);
+                        JsonFormat.parser().merge(s, obj);
                         return obj.build();
                     } catch (InvalidProtocolBufferException e) {
                         throw new IllegalArgumentException("Unable to Unmarshall JSON as " + obj.getClass().toString(), e);
