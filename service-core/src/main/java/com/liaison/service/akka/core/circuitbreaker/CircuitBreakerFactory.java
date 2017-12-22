@@ -32,4 +32,11 @@ public class CircuitBreakerFactory {
     public static CircuitBreaker getInstance(@Nonnull String key, @Nonnull Function<String, CircuitBreaker> function) {
         return map.computeIfAbsent(key, function);
     }
+
+    /**
+     * Clears all staged CircuitBreakers
+     */
+    public static void clear() {
+        map.clear();
+    }
 }
