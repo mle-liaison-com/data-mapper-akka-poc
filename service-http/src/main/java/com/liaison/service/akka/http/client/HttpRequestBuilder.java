@@ -3,6 +3,7 @@ package com.liaison.service.akka.http.client;
 import akka.http.javadsl.model.HttpMethod;
 import akka.http.javadsl.model.HttpMethods;
 import akka.http.javadsl.model.HttpRequest;
+import akka.http.javadsl.model.RequestEntity;
 import akka.http.javadsl.model.headers.RawHeader;
 
 import javax.annotation.Nonnull;
@@ -18,6 +19,7 @@ public class HttpRequestBuilder {
     private final String method;
     private final String uri;
     private final Map<String, String> headerMap = new HashMap<>();
+    private RequestEntity requestEntity;
 
     /**
      * Constructor. User must provide HTTP method and URI as {@link String}
@@ -42,6 +44,14 @@ public class HttpRequestBuilder {
         return this;
     }
 
+    public HttpRequestBuilder withEntity(RequestEntity requestEntity) {
+        if (this.requestEntity != null) {
+            throw new IllegalStateException("Cannot have multiple request entities");
+        }
+        this.requestEntity = requestEntity;
+        return this;
+    }
+
     /**
      * Builds {@link HttpRequest} with user provided values
      *
@@ -55,6 +65,9 @@ public class HttpRequestBuilder {
         HttpRequest request = HttpRequest.create(uri).withMethod(optional.get());
         for (Map.Entry<String, String> entry : headerMap.entrySet()) {
             request = request.addHeader(RawHeader.create(entry.getKey(), entry.getValue()));
+        }
+        if (requestEntity != null) {
+            request = request.withEntity(requestEntity);
         }
         return request;
     }
