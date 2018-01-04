@@ -1,6 +1,7 @@
 package com.liaison.service.akka.core.config;
 
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
 
@@ -8,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * This class provides an eagerly initialized singleton {@link Config} that is used by the whole service.
@@ -62,7 +64,6 @@ public final class ConfigManager {
         COMPLETE = combined;
     }
 
-
     /**
      * {@link ConfigFactory#load(String)} involves 3 steps
      *      1. loading {@link ConfigFactory#defaultOverrides()}
@@ -103,5 +104,23 @@ public final class ConfigManager {
      */
     public static Config getConfig() {
         return COMPLETE;
+    }
+
+    /**
+     * Helper method to support loading configuration with default value.
+     * Function can simply be a method reference from {@link Config} instance (i.e. config::getString, etc.).
+     *
+     * @param function function to call any get configuration method from {@link Config}
+     * @param key configuration key
+     * @param def default value
+     * @param <T> return type
+     * @return configuration value or default value if missing
+     */
+    public static <T> T loadConfigWithDefault(Function<String, T> function, String key, T def) {
+        try {
+            return function.apply(key);
+        } catch (ConfigException.Missing e) {
+            return def;
+        }
     }
 }
