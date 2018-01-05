@@ -17,7 +17,10 @@ import java.util.function.Function;
  *
  * Configuration files loaded by this class should conform to existing configuration hierarchy used by Alloy platform.
  * See <a href="https://github.com/LiaisonTechnologies/g2-lib-configuration/blob/master/library/README.md">g2-lib-configuration</a>
- * Failure to provide any one of the files will result in bootstrap failure.
+ * There are slight variations to variable names as {@link System#getenv()} is used instead of {@link System#getProperty(String)} for containerization
+ * Expected (but not required) environment variable names are {@value ENVIRONMENT_VARIABLE_APPLICATION_ID},
+ * {@value ENVIRONMENT_VARIABLE_STACK}, {@value ENVIRONMENT_VARIABLE_ENVIRONMENT}, {@value ENVIRONMENT_VARIABLE_REGION},
+ * {@value ENVIRONMENT_VARIABLE_DATACENTER}, and {@value ENVIRONMENT_VARIABLE_ADDITIONAL_URLS}
  *
  * Also, most of configuration changes go through a full SDLC, and even in-place changes are assumed to require a restart.
  * Thus, it will NOT support dynamic configuration loading.

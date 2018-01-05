@@ -1,7 +1,75 @@
-docker build --build-arg APPLICATION_ID=... .
+# Akka Nucleus
 
-docker run -it --rm -e "STACK=..." -e "ENVIRONMENT=..." -p 8989:8989 ${image name}
+Template project for Akka-based services
 
+## User Guide
+
+Users are strongly discouraged from making changes to all modules directly except service-implementation in their own service.
+It is highly recommended to submit changes to akka-nucleus for non service-implementation changes, 
+then pull those changes into forked/mirrored projects.
+
+### Creating a New Service
+
+In order to create a new service from this template project, user needs to first fork or 
+[mirror/duplicate](https://help.github.com/articles/duplicating-a-repository/) akka-nucleus.
+
+Once template project is forked/mirrored, then modify following files
+- settings.gradle
+- k8s.d/deployment.json
+- service-implementation
+
+### Working With Remote Repository
+
+User of this template project is expected to constantly pull from base project to keep all modules up-to-date.
+This can be simply achieved by configuring remote git repository.
+- git remote add base git@github.com:LiaisonTechnologies/g2-akka-nucleus.git
+- git remote update
+- git pull base develop
+
+### How to Run
+
+Akka-nucleus is expected to be fully docker-containerized. However, user has an option to run it in isolation.
+
+- Set environment (not system properties) variables needed by [ConfigManager](https://github.com/LiaisonTechnologies/g2-akka-nucleus/blob/develop/service-core/src/main/java/com/liaison/service/akka/core/config/ConfigManager.java)
+    - ![IntelliJ example](https://github.com/LiaisonTechnologies/g2-akka-nucleus/blob/develop/docs/ide_environment_variables.png)
+- Set required configurations (see [ServiceBoostrap](https://github.com/LiaisonTechnologies/g2-akka-nucleus/blob/develop/service-bootstrap/src/main/java/com/liaison/service/akka/bootstrap/ServiceBootstrap.java))
+    ```
+    akka {
+        remote {
+            untrusted-mode = on
+            trusted-selection-paths = ["/user/entry"]
+        }
+    }
+    com {
+        liaison {
+            service {
+                akka {
+                    bootstrap {
+                        class = "FQCN"
+                    }
+                }
+            }
+        }
+    }
+    ```
+    ```java
+    public class BootstrapModuleImpl implements BootstrapModule {
+    
+        @Override
+        public void configure(ActorSystem system) {
+          ...
+        }
+    }
+    ```
+- Run main in ServiceBootstrap class
+
+#### Containerization
+
+- docker build --build-arg APPLICATION_ID=... .
+- docker run -it --rm -e "STACK=..." -e "ENVIRONMENT=..." -p 8989:8989 ${image name}
+
+### Configuration Notes
+```
 remote
 - akka.actor.provider = remote
 - tcp
@@ -41,14 +109,4 @@ cluster
 security
 - akka.remote.untrusted-mode = on
 - akka.remote.trusted-selection-paths = ["placeholder"]
-
-Working with Remote Repository
-- git remote add base git@github.com:LiaisonTechnologies/g2-akka-nucleus.git
-- git remote update
-- git pull base develop
-
-Creating a new Akka Service
-- modify files below
-    - settings.gradle
-    - k8s.d/deployment.json
-    - service-implementation
+```
