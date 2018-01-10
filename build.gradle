@@ -66,9 +66,9 @@ subprojects {
     dependencies {
         agent group: 'com.lightbend.cinnamon', name: 'cinnamon-agent', version: cinnamonVersion
         // Use Coda Hale Metrics and Akka instrumentation
-        compile group: 'com.lightbend.cinnamon', name: 'cinnamon-chmetrics_2.12', version: cinnamonVersion
-        compile group: 'com.lightbend.cinnamon', name: 'cinnamon-chmetrics-http-reporter_2.12', version: cinnamonVersion
-        compile group: 'com.lightbend.cinnamon', name: 'cinnamon-akka_2.12', version: cinnamonVersion
-        compile group: 'com.lightbend.cinnamon', name: 'cinnamon-akka-http_2.12', version: cinnamonVersion
+        compile group: 'com.lightbend.cinnamon', name: 'cinnamon-chmetrics_2.11', version: cinnamonVersion
+        compile group: 'com.lightbend.cinnamon', name: 'cinnamon-chmetrics-http-reporter_2.11', version: cinnamonVersion
+        compile group: 'com.lightbend.cinnamon', name: 'cinnamon-akka_2.11', version: cinnamonVersion
+        compile group: 'com.lightbend.cinnamon', name: 'cinnamon-akka-http_2.11', version: cinnamonVersion
     }
 }
