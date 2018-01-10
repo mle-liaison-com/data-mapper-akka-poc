@@ -13,7 +13,7 @@ then pull those changes into forked/mirrored projects.
 In order to create a new service from this template project, user needs to first fork or 
 [mirror/duplicate](https://help.github.com/articles/duplicating-a-repository/) akka-nucleus.
 
-Once template project is forked/mirrored, then modify following files
+Once template project is forked/mirrored, then modify following files with new service name.
 - settings.gradle
 - k8s.d/deployment.json
 - service-implementation
@@ -63,10 +63,15 @@ Akka-nucleus is expected to be fully docker-containerized. However, user has an 
     ```
 - Run main in ServiceBootstrap class
 
+- All Protobuf classes (from src/main/proto/*.proto) are not checked in on purpose. Run gradle build once to add them to source set.
+
 #### Containerization
 
-- docker build --build-arg APPLICATION_ID=... .
-- docker run -it --rm -e "STACK=..." -e "ENVIRONMENT=..." -p 8989:8989 ${image name}
+Akka nucleus can run in container in 3 simple steps
+
++ gradlew clean build assemble
++ docker build --build-arg APPLICATION_ID=... . (where APPLICATION_ID is required, and should be name of the service)
++ docker run -it --rm -e "STACK=..." -e "ENVIRONMENT=..." -e "REGION=..." -e "DATACENTER=..." -p 8989:8989 ${image name} (docker environment variables are optional)
 
 ### Configuration Notes
 ```
