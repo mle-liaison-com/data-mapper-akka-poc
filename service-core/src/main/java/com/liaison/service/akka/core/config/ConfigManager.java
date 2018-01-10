@@ -1,6 +1,7 @@
-package com.liaison.service.akka.bootstrap.config;
+package com.liaison.service.akka.core.config;
 
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
 
@@ -8,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * This class provides an eagerly initialized singleton {@link Config} that is used by the whole service.
@@ -15,14 +17,17 @@ import java.util.Objects;
  *
  * Configuration files loaded by this class should conform to existing configuration hierarchy used by Alloy platform.
  * See <a href="https://github.com/LiaisonTechnologies/g2-lib-configuration/blob/master/library/README.md">g2-lib-configuration</a>
- * Failure to provide any one of the files will result in bootstrap failure.
+ * There are slight variations to variable names as {@link System#getenv()} is used instead of {@link System#getProperty(String)} for containerization
+ * Expected (but not required) environment variable names are {@value ENVIRONMENT_VARIABLE_APPLICATION_ID},
+ * {@value ENVIRONMENT_VARIABLE_STACK}, {@value ENVIRONMENT_VARIABLE_ENVIRONMENT}, {@value ENVIRONMENT_VARIABLE_REGION},
+ * {@value ENVIRONMENT_VARIABLE_DATACENTER}, and {@value ENVIRONMENT_VARIABLE_ADDITIONAL_URLS}
  *
  * Also, most of configuration changes go through a full SDLC, and even in-place changes are assumed to require a restart.
  * Thus, it will NOT support dynamic configuration loading.
  */
-public final class ConfigBootstrap {
+public final class ConfigManager {
 
-    private ConfigBootstrap() {
+    private ConfigManager() {
 
     }
 
@@ -53,12 +58,14 @@ public final class ConfigBootstrap {
 
         String additionalUrls = System.getenv(ENVIRONMENT_VARIABLE_ADDITIONAL_URLS);
         if (additionalUrls != null) {
-            combined = combine(loadConfigFromUrl(additionalUrls), combined);
+            String[] split = additionalUrls.split(",");
+            for (String url : split) {
+                combined = combine(loadConfigFromUrl(url), combined);
+            }
         }
 
         COMPLETE = combined;
     }
-
 
     /**
      * {@link ConfigFactory#load(String)} involves 3 steps
@@ -100,5 +107,23 @@ public final class ConfigBootstrap {
      */
     public static Config getConfig() {
         return COMPLETE;
+    }
+
+    /**
+     * Helper method to support loading configuration with default value.
+     * Function can simply be a method reference from {@link Config} instance (i.e. config::getString, etc.).
+     *
+     * @param function function to call any get configuration method from {@link Config}
+     * @param key configuration key
+     * @param def default value
+     * @param <T> return type
+     * @return configuration value or default value if missing
+     */
+    public static <T> T loadConfigWithDefault(Function<String, T> function, String key, T def) {
+        try {
+            return function.apply(key);
+        } catch (ConfigException.Missing e) {
+            return def;
+        }
     }
 }

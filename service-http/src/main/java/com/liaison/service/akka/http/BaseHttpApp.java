@@ -3,6 +3,7 @@ package com.liaison.service.akka.http;
 import akka.actor.ActorSystem;
 import akka.http.javadsl.server.HttpApp;
 import akka.http.javadsl.server.Route;
+import com.liaison.service.akka.http.route.metrics.MetricsRouteProvider;
 import com.liaison.service.akka.http.route.swagger.SwaggerRouteProvider;
 
 /**
@@ -30,12 +31,12 @@ public class BaseHttpApp extends HttpApp {
     }
 
     /**
-     * Creates a {@link Route} that combines the provided route and Swagger documentation route
+     * Creates a {@link Route} that combines the provided route, Swagger documentation route, and Metrics route
      *
-     * @return Swagger documentation route in addition to {@link Route} provided in the constructor
+     * @return Swagger documentation route and Metrics route, in addition to {@link Route} provided in the constructor
      */
     @Override
     protected Route routes() {
-        return route(route, new SwaggerRouteProvider(system).create());
+        return route(route, new SwaggerRouteProvider(system).create(), new MetricsRouteProvider().create());
     }
 }

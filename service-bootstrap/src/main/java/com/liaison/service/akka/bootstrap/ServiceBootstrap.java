@@ -1,7 +1,7 @@
 package com.liaison.service.akka.bootstrap;
 
 import akka.actor.ActorSystem;
-import com.liaison.service.akka.bootstrap.config.ConfigBootstrap;
+import com.liaison.service.akka.core.config.ConfigManager;
 import com.liaison.service.akka.core.ActorSystemWrapper;
 import com.liaison.service.akka.core.BootstrapModule;
 import com.typesafe.config.Config;
@@ -15,7 +15,7 @@ import static com.liaison.service.akka.core.ActorSystemWrapper.CONFIG_AKKA_REMOT
  * This class is responsible for bootstrapping the whole service.
  *
  * Bootstrapping steps are
- * 1. Load {@link Config} from {@link ConfigBootstrap}
+ * 1. Load {@link Config} from {@link ConfigManager}
  * 2. Lookup BootstrapModule using {@value CONFIG_BOOTSTRAP_MODULE_CLASS} value
  * 3. Run BootstrapModule
  *
@@ -27,7 +27,7 @@ public final class ServiceBootstrap {
     public static final String CONFIG_ACTOR_SYSTEM_NAME = "com.liaison.service.akka.actor.system.name";
 
     public static void main(String[] args) {
-        Config complete = ConfigBootstrap.getConfig();
+        Config complete = ConfigManager.getConfig();
 
         String className = complete.getString(CONFIG_BOOTSTRAP_MODULE_CLASS);
         if (className == null || className.isEmpty()) {

@@ -2,7 +2,6 @@ package com.liaison.service.akka.core;
 
 import akka.actor.Status;
 import akka.annotation.ApiMayChange;
-import com.liaison.service.akka.core.model.RoleBasedMessage;
 
 /**
  * Actor that is used to perform any authentication/authorization using the message.
@@ -12,30 +11,32 @@ import com.liaison.service.akka.core.model.RoleBasedMessage;
  * Once the message is verified, service writer is free to do whatever they want with it.
  */
 @ApiMayChange
-public final class EntryActor extends BaseActor {
+public final class EntryActor<T> extends BaseActor {
 
-    private final ActorMessageConsumer<RoleBasedMessage> consumer;
+    private final Class<T> clazz;
+    private final ActorMessageConsumer<T> consumer;
 
     /**
      * Constructor for EntryActor. Post-action consumer needs to be passed in.
      *
      * @param consumer {@link ActorMessageConsumer} that defines post-actions to be taken once authorization is done
      */
-    public EntryActor(ActorMessageConsumer<RoleBasedMessage> consumer) {
+    public EntryActor(Class<T> clazz, ActorMessageConsumer<T> consumer) {
+        this.clazz = clazz;
         this.consumer = consumer;
     }
 
     /**
-     * Allows only {@link RoleBasedMessage}. All other messages will be rejected.
+     * Allows only T. All other messages will be rejected.
      *
      * @return Receive
      */
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(RoleBasedMessage.class, msg -> consumer.accept(msg, getContext(), getSender()))
+                .match(clazz, msg -> consumer.accept(msg, getContext(), getSender()))
                 .matchAny(any -> {
-                    Exception exception = new IllegalStateException("Inbound message must extend " + RoleBasedMessage.class.getName());
+                    Exception exception = new IllegalStateException("Inbound message must extend " + clazz.getName());
                     getSender().tell(new Status.Failure(exception), getSelf());
                     throw exception;
                 })
