@@ -74,7 +74,7 @@ public interface RouteProvider {
                         JsonFormat.parser().merge(s, obj);
                         return obj.build();
                     } catch (InvalidProtocolBufferException e) {
-                        throw new IllegalArgumentException("Unable to Unmarshall JSON as " + obj.getClass().toString(), e);
+                        throw new IllegalArgumentException("Unable to Unmarshall JSON as " + obj.getClass().getEnclosingClass().getSimpleName(), e);
                     }
                 });
     }

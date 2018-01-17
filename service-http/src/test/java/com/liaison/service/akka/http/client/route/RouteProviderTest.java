@@ -107,7 +107,7 @@ public class RouteProviderTest extends JUnitRouteTest {
     @Test
     public void testNonProtobufMessageWithUnmarshaller() {
         testRoute.run(HttpRequest.POST(PATH_PROTOBUF_PREFIXED).withEntity(MediaTypes.APPLICATION_JSON.toContentType(), "{\"name\":\"value\"}"))
-                .assertStatusCode(400);
+                .assertStatusCode(400).assertEntity("Unable to Unmarshall JSON as " + WorkTicketOuterClass.WorkTicket.class.getSimpleName());
     }
 
     @Test

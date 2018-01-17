@@ -6,6 +6,8 @@ import akka.actor.ActorRef;
 import akka.actor.ActorRefProvider;
 import akka.actor.ActorSystem;
 import akka.actor.ActorSystemImpl;
+import akka.actor.DynamicAccess;
+import akka.actor.ExtendedActorSystem;
 import akka.actor.Extension;
 import akka.actor.ExtensionId;
 import akka.actor.InternalActorRef;
@@ -16,29 +18,31 @@ import akka.dispatch.Dispatchers;
 import akka.dispatch.Mailboxes;
 import akka.event.EventStream;
 import akka.event.LoggingAdapter;
+import akka.event.LoggingFilter;
 import scala.Function0;
 import scala.collection.Iterable;
 import scala.concurrent.ExecutionContextExecutor;
 import scala.concurrent.Future;
 
 import java.util.List;
+import java.util.concurrent.ThreadFactory;
 
 /**
- * A decorator for {@link ActorSystem} to add additional features while performing the same ActorSystem duties.
+ * A decorator for {@link ExtendedActorSystem} to add additional features while performing the same ActorSystem duties.
  */
-public final class ActorSystemWrapper extends ActorSystem {
+public final class ActorSystemWrapper extends ExtendedActorSystem {
 
     public static final String CONFIG_AKKA_REMOTE_UNTRUSTED_MODE = "akka.remote.untrusted-mode";
     public static final String CONFIG_AKKA_REMOTE_TRUSTED_SELECTION_PATHS = "akka.remote.trusted-selection-paths";
 
-    private final ActorSystem system;
+    private final ExtendedActorSystem system;
 
     /**
      * Constructor for ActorSystemWrapper.
      *
-     * @param system Original {@link ActorSystem} instance
+     * @param system Original {@link ExtendedActorSystem} instance
      */
-    public ActorSystemWrapper(ActorSystem system) {
+    public ActorSystemWrapper(ExtendedActorSystem system) {
         this.system = system;
     }
 
@@ -110,6 +114,36 @@ public final class ActorSystemWrapper extends ActorSystem {
     @Override
     public InternalActorRef guardian() {
         return system.guardian();
+    }
+
+    @Override
+    public InternalActorRef systemGuardian() {
+        return system.systemGuardian();
+    }
+
+    @Override
+    public ActorRef systemActorOf(Props props, String s) {
+        return system.systemActorOf(props, s);
+    }
+
+    @Override
+    public ThreadFactory threadFactory() {
+        return system.threadFactory();
+    }
+
+    @Override
+    public DynamicAccess dynamicAccess() {
+        return system.dynamicAccess();
+    }
+
+    @Override
+    public LoggingFilter logFilter() {
+        return system.logFilter();
+    }
+
+    @Override
+    public String printTree() {
+        return system.printTree();
     }
 
     @Override

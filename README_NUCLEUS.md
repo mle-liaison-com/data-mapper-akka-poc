@@ -15,7 +15,7 @@ In order to create a new service from this template project, user needs to first
 
 Once template project is forked/mirrored, then modify following files with new service name.
 - settings.gradle
-- k8s.d/deployment.json
+- k8s-file.yaml (or k8s-file-seed.yaml & k8s-file-worker.yaml)
 - service-implementation
 
 ### Working With Remote Repository
@@ -30,7 +30,8 @@ This can be simply achieved by configuring remote git repository.
 
 Akka-nucleus is expected to be fully docker-containerized. However, user has an option to run it in isolation.
 
-- Set environment (not system properties) variables needed by [ConfigManager](https://github.com/LiaisonTechnologies/g2-akka-nucleus/blob/develop/service-core/src/main/java/com/liaison/service/akka/core/config/ConfigManager.java)
+- Set environment (not system properties) variables needed by [ConfigManager](https://github.com/LiaisonTechnologies/g2-akka-nucleus/blob/develop/service-core/src/main/java/com/liaison/service/akka/core/config/ConfigManager.java),
+  along with HOST_NAME
     - ![IntelliJ example](https://github.com/LiaisonTechnologies/g2-akka-nucleus/blob/develop/docs/ide_environment_variables.png)
 - Set required configurations (see [ServiceBoostrap](https://github.com/LiaisonTechnologies/g2-akka-nucleus/blob/develop/service-bootstrap/src/main/java/com/liaison/service/akka/bootstrap/ServiceBootstrap.java))
     ```
@@ -63,7 +64,7 @@ Akka-nucleus is expected to be fully docker-containerized. However, user has an 
     ```
 - Run main in ServiceBootstrap class
 
-- All Protobuf classes (from src/main/proto/*.proto) are not checked in on purpose. Run gradle build once to add them to source set.
+- All Protobuf generated classes (from src/main/proto/*.proto) are not checked in on purpose. Run gradle build once to add them to source set.
 
 #### Containerization
 
@@ -72,6 +73,41 @@ Akka nucleus can run in container in 3 simple steps
 + gradlew clean build assemble
 + docker build --build-arg APPLICATION_ID=... . (where APPLICATION_ID is required, and should be name of the service)
 + docker run -it --rm -e "STACK=..." -e "ENVIRONMENT=..." -e "REGION=..." -e "DATACENTER=..." -p 8989:8989 ${image name} (docker environment variables are optional)
+
+### Continuous Integration
+
+Akka nucleus fully supports continuous integration using Jenkins.
+Currently available pipelines are
+- checkout
+    - checks code out from source control system
+- build
+    - extracts project name and version from first line of settings.gradle and RELEASE_NOTES.md respectively
+    - builds all modules via gradle clean build
+- assemble
+    - creates distributable artifact via gradle assemble
+- docker build
+    - builds docker image named hermes/{project name} where project name is one that is extract from build pipeline
+- docker push
+    - pushes docker image to docker registry
+- k8s setup dev
+    - creates configmap and secret using yaml files located within k8s/ to dev namespace
+    - this step is executed from akka-nucleus project only
+- k8s deploy dev
+    - applies deployment files to dev namespace
+        - if k8s-file-seed.yaml exists, it assumes akka cluster. 
+            - k8s-file-seed.yaml gets exeucted, followed by k8s-file-worker.yaml after 60 seconds delay
+        - if not, k8s-file.yaml gets executed.
+
+### Testing
+
+With new agile continuous integration plan, service owners are highly encouraged (or required) to keep test coverage as high as possible,
+as well as providing any necessary functional test & E2E tests to minimize manual intervention through continuous integration pipelines.
+
+Akka provides well rounded kits for testing an actor system [Testing Actor Systems](https://doc.akka.io/docs/akka/current/testing.html),
+that can be used for such purposes.
+
+For example usages, please check sample tests in [akka-nucleus/service-implementation](https://github.com/LiaisonTechnologies/g2-akka-nucleus/tree/develop/service-implementation/src/test/java/com/liaison/service/akka/nucleus/actor)
+or more detailed tests in [script-lite](https://github.com/LiaisonTechnologies/g2-script-lite/tree/develop/service-implementation/src/test/java/com/liaison/service/akka/script).
 
 ### Configuration Notes
 ```
@@ -86,6 +122,8 @@ remote
         - akka.remote.enabled-transports = ["akka.remote.netty.ssl"]
         - akka.remote.netty.ssl.hostname = 0.0.0.0
         - akka.remote.netty.ssl.port = 2552
+        
+        # same trust-store configurations will be used for HTTPS
         - akka.remote.netty.ssl.security.key-store = ""
         - akka.remote.netty.ssl.security.trust-store = ""
         - akka.remote.netty.ssl.security.key-store-password = ""

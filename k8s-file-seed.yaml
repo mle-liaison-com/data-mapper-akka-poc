@@ -1,0 +1,98 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: alloy-core-akkanucleus-seed
+spec:
+  ports:
+  - name: remoting
+    port: 2552
+    protocol: TCP
+    targetPort: 2552
+  - name: http
+    port: 8989
+    protocol: TCP
+    targetPort: 8989
+  selector:
+    run: alloy-core-akkanucleus-seed
+  clusterIP: None
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  labels:
+    run: alloy-core-akkanucleus-seed
+    zone: bb-lsec
+  name: alloy-core-akkanucleus-seed
+spec:
+  serviceName: alloy-core-akkanucleus-seed
+  replicas: 2
+  selector:
+    matchLabels:
+      run: alloy-core-akkanucleus-seed
+      zone: bb-lsec
+  template:
+    metadata:
+      labels:
+        run: alloy-core-akkanucleus-seed
+        zone: bb-lsec
+    spec:
+      volumes:
+      - name: alloy-core-akkanucleus
+        secret:
+          defaultMode: 420
+          secretName: alloy-core-akkanucleus
+      imagePullSecrets:
+        - name: alloy-imagepullsecret
+      containers:
+      - name: alloy-core-akkanucleus-seed
+        image: docker.ci.liaison.com/hermes/akka-nucleus:latest
+        imagePullPolicy: Always
+        env:
+        - name: SEED_NODES
+          value: alloy-core-akkanucleus-seed-0.alloy-core-akkanucleus-seed,alloy-core-akkanucleus-seed-1.alloy-core-akkanucleus-seed
+        # Do NOT change the following env configurations if possible
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: STACK
+          valueFrom:
+            configMapKeyRef:
+              name: alloy-core-akkanucleus
+              key: STACK
+        - name: ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              name: alloy-core-akkanucleus
+              key: ENVIRONMENT
+        - name: REGION
+          valueFrom:
+            configMapKeyRef:
+              name: alloy-core-akkanucleus
+              key: REGION
+        - name: DATACENTER
+          valueFrom:
+            configMapKeyRef:
+              name: alloy-core-akkanucleus
+              key: DATACENTER
+        - name: ADDITIONAL_URLS
+          valueFrom:
+            configMapKeyRef:
+              name: alloy-core-akkanucleus
+              key: ADDITIONAL_URLS
+        command: ["/bin/sh", "-c", "HOST_NAME=${POD_NAME}.alloy-core-akkanucleus-seed /opt/liaison/akka-nucleus/bin/service-bootstrap"]
+
+        livenessProbe:
+          tcpSocket:
+            port: 2552
+
+        ports:
+        - containerPort: 2552
+          protocol: TCP
+        - containerPort: 8989
+          protocol: TCP
+
+        volumeMounts:
+        - mountPath: /secret
+          name: alloy-core-akkanucleus
+          readOnly: true

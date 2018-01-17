@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+  ADDITIONAL_URLS: file:///secret/secret.conf
+  DATACENTER: at4
+  ENVIRONMENT: dev-int
+  REGION: us
+  STACK: default
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: alloy-core-akkanucleus

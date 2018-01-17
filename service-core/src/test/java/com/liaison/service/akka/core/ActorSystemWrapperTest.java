@@ -3,6 +3,7 @@ package com.liaison.service.akka.core;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import akka.actor.ExtendedActorSystem;
 import akka.actor.Props;
 import akka.testkit.javadsl.TestKit;
 import org.junit.After;
@@ -25,7 +26,7 @@ public class ActorSystemWrapperTest {
 
     @Before
     public void setup() {
-        system = new ActorSystemWrapper(ActorSystem.create(getClass().getSimpleName()));
+        system = new ActorSystemWrapper((ExtendedActorSystem) ActorSystem.create(getClass().getSimpleName()));
     }
 
     @After
