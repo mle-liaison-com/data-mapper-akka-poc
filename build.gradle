@@ -53,7 +53,7 @@ subprojects {
                 username 'c43e12fa-7735-488f-88d2-cb7eac2a1841@lightbend'
                 password 'e1928ecf99045701b3637dc9cceff2b426001130'
             }
-            url 'https://dl.bintray.com/lightbend/commercial-releases'
+            url 'https://repo.lightbend.com/commercial-releases'
         }
     }
 
@@ -61,7 +61,7 @@ subprojects {
         agent
     }
 
-    def cinnamonVersion = '2.6.1'
+    def cinnamonVersion = '2.6.3'
 
     dependencies {
         agent group: 'com.lightbend.cinnamon', name: 'cinnamon-agent', version: cinnamonVersion
