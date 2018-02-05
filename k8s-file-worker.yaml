@@ -91,6 +91,11 @@ spec:
               fieldRef:
                 apiVersion: v1
                 fieldPath: status.podIP
+          - name: JAVA_OPTS
+            valueFrom:
+              configMapKeyRef:
+                name: alloy-core-akkanucleus
+                key: JAVA_OPTS
         image: docker.ci.liaison.com/hermes/akka-nucleus:latest
         ports:
           - containerPort: 2552

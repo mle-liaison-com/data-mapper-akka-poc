@@ -80,6 +80,11 @@ spec:
             configMapKeyRef:
               name: alloy-core-akkanucleus
               key: ADDITIONAL_URLS
+        - name: JAVA_OPTS
+          valueFrom:
+            configMapKeyRef:
+              name: alloy-core-akkanucleus
+              key: JAVA_OPTS
         command: ["/bin/sh", "-c", "HOST_NAME=${POD_NAME}.alloy-core-akkanucleus-seed /opt/liaison/akka-nucleus/bin/service-bootstrap"]
 
         livenessProbe:

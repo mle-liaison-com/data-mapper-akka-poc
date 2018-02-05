@@ -3,6 +3,7 @@ data:
   ADDITIONAL_URLS: file:///secret/secret.conf
   DATACENTER: at4
   ENVIRONMENT: dev-int
+  JAVA_OPTS: -Djavax.net.ssl.keyStore=/secret/tomcatssl.jks -Djavax.net.ssl.keyStorePassword=Purple3leph@nts
   REGION: us
   STACK: default
 kind: ConfigMap
